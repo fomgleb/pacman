@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "DEBUG APP",
+            "program": "${workspaceFolder}/zig-out/bin/pacman",
+            "preLaunchTask": "BUILD DEBUG",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "DEBUG TESTS",
+            "program": "${workspaceFolder}/zig-out/bin/test",
+            "preLaunchTask": "BUILD TEST",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+.{
+    .name = .pacman,
+    .version = "0.0.0",
+    .fingerprint = 0xa1c2e4b87513a3dd,
+    .minimum_zig_version = "0.14.1",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
