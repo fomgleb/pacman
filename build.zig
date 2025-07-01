@@ -9,14 +9,14 @@ pub fn build(b: *Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const imports: []const Import = &.{};
-
-    const main_module = createModule(b, "src/main.zig", target, optimize, imports);
+    const main_module = createModule(b, "src/main.zig", target, optimize, &.{});
+    const sdl_dep = b.dependency("sdl", .{ .target = target, .optimize = optimize });
+    main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     const main_exe = createMainExecutable(b, main_module);
     addCheckStep(b, main_module);
     addRunStep(b, main_exe);
 
-    const test_module = createModule(b, "src/test.zig", target, optimize, imports);
+    const test_module = createModule(b, "src/test.zig", target, optimize, &.{});
     const test_exe = addTestExeStep(b, test_module);
     addTestStep(b, test_exe);
 }
