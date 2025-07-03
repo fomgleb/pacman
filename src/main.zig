@@ -1,9 +1,9 @@
 const std = @import("std");
 const log = std.log;
 const Window = @import("Window.zig");
-const c = @cImport({
-    @cInclude("SDL3/SDL_init.h");
-});
+const Pacman = @import("Pacman.zig");
+const Renderable = @import("Renderable.zig");
+const c = @import("c.zig");
 
 const window_name = "Pacman";
 
@@ -11,8 +11,13 @@ pub fn main() !void {
     try initSdl();
     defer deinitSdl();
 
-    const window = try Window.init(window_name, 600, 400, 0);
+    var window = try Window.init(window_name, 600, 400, 0);
     defer window.deinit();
+
+    const pacman = try Pacman.init(window.renderer, "resources/pacman.png");
+    defer pacman.deinit();
+
+    const renderables = [_]Renderable{pacman.renderable()};
 
     while (true) {
         var event: c.SDL_Event = undefined;
@@ -22,6 +27,14 @@ pub fn main() !void {
                 else => {},
             }
         }
+
+        _ = c.SDL_RenderClear(@ptrCast(window.renderer));
+
+        for (renderables) |renderable| {
+            try renderable.render();
+        }
+
+        _ = c.SDL_RenderPresent(@ptrCast(window.renderer));
     }
 }
 
