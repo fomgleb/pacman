@@ -2,21 +2,25 @@ const std = @import("std");
 const Timer = std.time.Timer;
 const log = std.log;
 const c = @import("c.zig");
-const Window = @import("Window.zig");
 const Pacman = @import("Pacman.zig");
 const Renderable = @import("Renderable.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
+const Point = @import("point.zig").Point;
 
-const window_name = "Pacman";
+const window_title = "Pacman";
+const initial_window_size: Point(comptime_int) = .{ .x = 600, .y = 400 };
 
 pub fn main() !void {
     try initSdl();
     defer deinitSdl();
 
-    var window = try Window.init(window_name, 600, 400, 0);
-    defer window.deinit();
+    const sdlWindow = try initSdlWindow();
+    defer c.SDL_DestroyWindow(sdlWindow);
 
-    var pacman = try Pacman.init(window.renderer, "resources/pacman.png");
+    const sdlRenderer = try initSdlRenderer(sdlWindow);
+    defer c.SDL_DestroyRenderer(sdlRenderer);
+
+    var pacman = try Pacman.init(sdlRenderer, "resources/pacman.png");
     defer pacman.deinit();
 
     const renderables = [_]Renderable{pacman.renderable()};
@@ -41,11 +45,11 @@ pub fn main() !void {
             }
         }
 
-        _ = c.SDL_RenderClear(@ptrCast(window.renderer));
+        try sdlRenderClear(sdlRenderer);
         for (renderables) |renderable| {
             try renderable.render();
         }
-        _ = c.SDL_RenderPresent(@ptrCast(window.renderer));
+        try sdlRenderPresent(sdlRenderer);
 
         pacman.update(delta_time_counter.lap());
 
@@ -63,4 +67,32 @@ fn initSdl() error{SdlError}!void {
 fn deinitSdl() void {
     c.SDL_QuitSubSystem(c.SDL_INIT_VIDEO);
     c.SDL_Quit();
+}
+
+fn initSdlWindow() error{SdlError}!*c.SDL_Window {
+    return c.SDL_CreateWindow(window_title, initial_window_size.x, initial_window_size.y, c.SDL_WINDOW_RESIZABLE) orelse {
+        log.err("Failed to SDL_CreateWindow: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+fn initSdlRenderer(window: *c.SDL_Window) error{SdlError}!*c.SDL_Renderer {
+    return c.SDL_CreateRenderer(window, null) orelse {
+        log.err("Failed to SDL_CreateRenderer: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+fn sdlRenderClear(renderer: *c.SDL_Renderer) error{SdlError}!void {
+    if (!c.SDL_RenderClear(renderer)) {
+        log.err("Failed to SDL_RenderClear: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+}
+
+fn sdlRenderPresent(renderer: *c.SDL_Renderer) error{SdlError}!void {
+    if (!c.SDL_RenderPresent(renderer)) {
+        log.err("Failed to SDL_RenderPresent: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
 }

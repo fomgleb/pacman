@@ -1,8 +1,8 @@
 const time = @import("std").time;
-const c = @import("c.zig");
+const Point = @import("point.zig").Point;
 const LinearController = @This();
 
-position: c.SDL_FPoint = .{ .x = 100, .y = 100 },
+position: Point(f32) = .{ .x = 100, .y = 100 },
 /// A number of pixels per second.
 speed: u32,
 desired_direction: Direction,
