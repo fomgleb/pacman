@@ -26,10 +26,10 @@ pub fn main() !void {
                 c.SDL_EVENT_WINDOW_CLOSE_REQUESTED => return,
                 c.SDL_EVENT_KEY_DOWN => {
                     switch (event.key.key) {
-                        c.SDLK_UP => pacman.position.y -= 5,
-                        c.SDLK_DOWN => pacman.position.y += 5,
-                        c.SDLK_LEFT => pacman.position.x -= 5,
-                        c.SDLK_RIGHT => pacman.position.x += 5,
+                        c.SDLK_UP => pacman.controller.desired_direction = .up,
+                        c.SDLK_DOWN => pacman.controller.desired_direction = .down,
+                        c.SDLK_LEFT => pacman.controller.desired_direction = .left,
+                        c.SDLK_RIGHT => pacman.controller.desired_direction = .right,
                         else => {},
                     }
                 },
@@ -44,6 +44,8 @@ pub fn main() !void {
         }
 
         _ = c.SDL_RenderPresent(@ptrCast(window.renderer));
+
+        pacman.update();
     }
 }
 

@@ -1,11 +1,12 @@
 const c = @import("c.zig");
 const log = @import("std").log.scoped(.Pacman);
 const Renderable = @import("Renderable.zig");
+const LinearController = @import("LinearController.zig");
 const Pacman = @This();
 
 texture: *c.SDL_Texture,
 renderer: *c.SDL_Renderer,
-position: c.SDL_Point = .{ .x = 100, .y = 100 },
+controller: LinearController = .init(0.1, .left),
 
 pub fn init(renderer: *c.SDL_Renderer, texture_path: [*:0]const u8) error{SdlError}!Pacman {
     const texture: *c.SDL_Texture = c.IMG_LoadTexture(renderer, texture_path) orelse {
@@ -33,8 +34,8 @@ pub fn renderable(self: *const Pacman) Renderable {
 
 pub fn render(self: *const Pacman) error{SdlError}!void {
     const rectangle = c.SDL_FRect{
-        .x = @floatFromInt(self.position.x),
-        .y = @floatFromInt(self.position.y),
+        .x = self.controller.position.x,
+        .y = self.controller.position.y,
         .w = @floatFromInt(self.texture.w * 5),
         .h = @floatFromInt(self.texture.h * 5),
     };
@@ -43,4 +44,8 @@ pub fn render(self: *const Pacman) error{SdlError}!void {
         log.err("Failed to SDL_RenderTexture: {s}", .{c.SDL_GetError()});
         return error.SdlError;
     }
+}
+
+pub fn update(self: *Pacman) void {
+    self.controller.update();
 }
