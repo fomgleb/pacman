@@ -1,9 +1,11 @@
 const std = @import("std");
+const Timer = std.time.Timer;
 const log = std.log;
+const c = @import("c.zig");
 const Window = @import("Window.zig");
 const Pacman = @import("Pacman.zig");
 const Renderable = @import("Renderable.zig");
-const c = @import("c.zig");
+const FpsLimiter = @import("FpsLimiter.zig");
 
 const window_name = "Pacman";
 
@@ -18,6 +20,8 @@ pub fn main() !void {
     defer pacman.deinit();
 
     const renderables = [_]Renderable{pacman.renderable()};
+    var fps_limiter = try FpsLimiter.init(60);
+    var delta_time_counter = try Timer.start();
 
     while (true) {
         var event: c.SDL_Event = undefined;
@@ -38,14 +42,14 @@ pub fn main() !void {
         }
 
         _ = c.SDL_RenderClear(@ptrCast(window.renderer));
-
         for (renderables) |renderable| {
             try renderable.render();
         }
-
         _ = c.SDL_RenderPresent(@ptrCast(window.renderer));
 
-        pacman.update();
+        pacman.update(delta_time_counter.lap());
+
+        fps_limiter.waitFrameEnd();
     }
 }
 

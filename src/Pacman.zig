@@ -6,7 +6,7 @@ const Pacman = @This();
 
 texture: *c.SDL_Texture,
 renderer: *c.SDL_Renderer,
-controller: LinearController = .init(0.1, .left),
+controller: LinearController = .init(50, .left),
 
 pub fn init(renderer: *c.SDL_Renderer, texture_path: [*:0]const u8) error{SdlError}!Pacman {
     const texture: *c.SDL_Texture = c.IMG_LoadTexture(renderer, texture_path) orelse {
@@ -46,6 +46,6 @@ pub fn render(self: *const Pacman) error{SdlError}!void {
     }
 }
 
-pub fn update(self: *Pacman) void {
-    self.controller.update();
+pub fn update(self: *Pacman, delta_time: u64) void {
+    self.controller.update(delta_time);
 }
