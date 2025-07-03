@@ -8,6 +8,10 @@
             .url = "https://github.com/castholm/SDL/archive/refs/tags/v0.2.4+3.2.16.tar.gz",
             .hash = "sdl-0.2.4+3.2.16-7uIn9DPhfgH29yAIJqHLc69hNb4IW0q-AngtKCFoT92b",
         },
+        .sdl_image = .{
+            .url = "https://github.com/libsdl-org/SDL_image/archive/refs/tags/release-3.2.4.tar.gz",
+            .hash = "N-V-__8AAJB7IgJ65BPSqjqzt7j-5xKDklR0h8c11T60iemj",
+        },
     },
     .paths = .{
         "build.zig",
