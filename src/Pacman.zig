@@ -5,6 +5,7 @@ const Pacman = @This();
 
 texture: *c.SDL_Texture,
 renderer: *c.SDL_Renderer,
+position: c.SDL_Point = .{ .x = 100, .y = 100 },
 
 pub fn init(renderer: *c.SDL_Renderer, texture_path: [*:0]const u8) error{SdlError}!Pacman {
     const texture: *c.SDL_Texture = c.IMG_LoadTexture(renderer, texture_path) orelse {
@@ -32,8 +33,8 @@ pub fn renderable(self: *const Pacman) Renderable {
 
 pub fn render(self: *const Pacman) error{SdlError}!void {
     const rectangle = c.SDL_FRect{
-        .x = 100,
-        .y = 100,
+        .x = @floatFromInt(self.position.x),
+        .y = @floatFromInt(self.position.y),
         .w = @floatFromInt(self.texture.w * 5),
         .h = @floatFromInt(self.texture.h * 5),
     };

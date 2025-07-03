@@ -14,7 +14,7 @@ pub fn main() !void {
     var window = try Window.init(window_name, 600, 400, 0);
     defer window.deinit();
 
-    const pacman = try Pacman.init(window.renderer, "resources/pacman.png");
+    var pacman = try Pacman.init(window.renderer, "resources/pacman.png");
     defer pacman.deinit();
 
     const renderables = [_]Renderable{pacman.renderable()};
@@ -24,6 +24,15 @@ pub fn main() !void {
         while (c.SDL_PollEvent(&event)) {
             switch (event.type) {
                 c.SDL_EVENT_WINDOW_CLOSE_REQUESTED => return,
+                c.SDL_EVENT_KEY_DOWN => {
+                    switch (event.key.key) {
+                        c.SDLK_UP => pacman.position.y -= 5,
+                        c.SDLK_DOWN => pacman.position.y += 5,
+                        c.SDLK_LEFT => pacman.position.x -= 5,
+                        c.SDLK_RIGHT => pacman.position.x += 5,
+                        else => {},
+                    }
+                },
                 else => {},
             }
         }
