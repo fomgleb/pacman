@@ -47,6 +47,7 @@ pub fn main() !void {
             }
         }
 
+        try sdl.setRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         try sdl.renderClear(sdl_renderer);
         for (renderables) |renderable| {
             try renderable.render();
