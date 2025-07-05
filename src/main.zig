@@ -6,10 +6,14 @@ const Pacman = @import("Pacman.zig");
 const Renderable = @import("Renderable.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
 const Point = @import("point.zig").Point;
+const LevelArea = @import("LevelArea.zig");
+const Grid = @import("Grid.zig");
 const sdl = @import("sdl.zig");
 
 const window_title = "Pacman";
 const initial_window_size = Point(u32){ .x = 600, .y = 400 };
+const level_aspect_ratio = Point(u8){ .x = 2, .y = 1 };
+const grid_size = Point(u16){ .x = 20, .y = 10 };
 
 pub fn main() !void {
     try sdl.initSubSystem(c.SDL_INIT_VIDEO);
@@ -25,7 +29,11 @@ pub fn main() !void {
     var pacman = try Pacman.init(sdl_renderer, "resources/pacman.png");
     defer pacman.deinit();
 
-    const renderables = [_]Renderable{pacman.renderable()};
+    var level_area = LevelArea.init(sdl_renderer, level_aspect_ratio, initial_window_size);
+    var grid = Grid.init(sdl_renderer, level_area.render_area, grid_size);
+
+    const renderables = [_]Renderable{ level_area.renderable(), grid.renderable(), pacman.renderable() };
+
     var fps_limiter = try FpsLimiter.init(60);
     var delta_time_counter = try Timer.start();
 
@@ -42,6 +50,11 @@ pub fn main() !void {
                         c.SDLK_RIGHT => pacman.controller.desired_direction = .right,
                         else => {},
                     }
+                },
+                c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
+                    const new_window_size = Point(i32){ .x = event.window.data1, .y = event.window.data2 };
+                    level_area.scale(new_window_size.intCast(u32));
+                    grid.scale(level_area.render_area);
                 },
                 else => {},
             }
