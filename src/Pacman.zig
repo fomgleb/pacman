@@ -5,7 +5,6 @@ const LinearController = @import("LinearController.zig");
 const Pacman = @This();
 
 texture: *c.SDL_Texture,
-renderer: *c.SDL_Renderer,
 controller: LinearController = .init(50, .left),
 
 pub fn init(renderer: *c.SDL_Renderer, texture_path: [*:0]const u8) error{SdlError}!Pacman {
@@ -20,7 +19,6 @@ pub fn init(renderer: *c.SDL_Renderer, texture_path: [*:0]const u8) error{SdlErr
 
     return Pacman{
         .texture = texture,
-        .renderer = renderer,
     };
 }
 
@@ -40,7 +38,8 @@ pub fn render(self: *const Pacman) error{SdlError}!void {
         .h = @floatFromInt(self.texture.h * 5),
     };
 
-    if (!c.SDL_RenderTexture(self.renderer, self.texture, null, &rectangle)) {
+    const renderer = c.SDL_GetRendererFromTexture(self.texture);
+    if (!c.SDL_RenderTexture(renderer, self.texture, null, &rectangle)) {
         log.err("Failed to SDL_RenderTexture: {s}", .{c.SDL_GetError()});
         return error.SdlError;
     }
