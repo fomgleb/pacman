@@ -2,9 +2,7 @@ const time = @import("std").time;
 const Point = @import("point.zig").Point;
 const LinearController = @This();
 
-position: Point(f32) = .{ .x = 100, .y = 100 },
-/// A number of pixels per second.
-speed: u32,
+speed: f32,
 desired_direction: Direction,
 actual_direction: Direction,
 
@@ -15,7 +13,7 @@ const Direction = enum {
     right,
 };
 
-pub fn init(speed: u32, initial_direction: Direction) LinearController {
+pub fn init(speed: f32, initial_direction: Direction) LinearController {
     return LinearController{
         .speed = speed,
         .desired_direction = initial_direction,
@@ -23,18 +21,20 @@ pub fn init(speed: u32, initial_direction: Direction) LinearController {
     };
 }
 
-pub fn update(self: *LinearController, delta_time: u64) void {
+pub fn update(self: *LinearController, delta_time: u64, old_position: Point(f32)) Point(f32) {
     if (self.desired_direction != self.actual_direction) {
         self.actual_direction = self.desired_direction;
     }
 
     const delta_time_f32: f32 = @floatFromInt(delta_time);
-    const speed_f32: f32 = @floatFromInt(self.speed);
-    const step_pixels = speed_f32 * (delta_time_f32 / time.ns_per_s);
+    const step_pixels = self.speed * (delta_time_f32 / time.ns_per_s);
+    var new_position = old_position;
     switch (self.desired_direction) {
-        .up => self.position.y -= step_pixels,
-        .down => self.position.y += step_pixels,
-        .left => self.position.x -= step_pixels,
-        .right => self.position.x += step_pixels,
+        .up => new_position.y -= step_pixels,
+        .down => new_position.y += step_pixels,
+        .left => new_position.x -= step_pixels,
+        .right => new_position.x += step_pixels,
     }
+
+    return new_position;
 }

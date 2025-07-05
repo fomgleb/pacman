@@ -56,3 +56,27 @@ pub fn renderFillRect(renderer: *c.SDL_Renderer, rect: Rect(f32)) error{SdlError
         return error.SdlError;
     }
 }
+
+pub fn getRendererFromTexture(texture: *c.SDL_Texture) !*c.SDL_Renderer {
+    return c.SDL_GetRendererFromTexture(texture) orelse {
+        log.err("Failed to SDL_GetRendererFromTexture: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+pub fn renderTexture(
+    renderer: *c.SDL_Renderer,
+    texture: *c.SDL_Texture,
+    srcrect: ?Rect(f32),
+    dstrect: ?Rect(f32),
+) !void {
+    if (!c.SDL_RenderTexture(
+        renderer,
+        texture,
+        if (srcrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+        if (dstrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+    )) {
+        log.err("Failed to SDL_RenderTexture: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+}

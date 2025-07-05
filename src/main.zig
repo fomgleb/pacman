@@ -26,11 +26,11 @@ pub fn main() !void {
     const sdl_renderer = try sdl.createRenderer(sdl_window, null);
     defer c.SDL_DestroyRenderer(sdl_renderer);
 
-    var pacman = try Pacman.init(sdl_renderer, "resources/pacman.png");
-    defer pacman.deinit();
-
     var level_area = LevelArea.init(sdl_renderer, level_aspect_ratio, initial_window_size);
     var grid = Grid.init(sdl_renderer, level_area.render_area, grid_size);
+
+    var pacman = try Pacman.init(sdl_renderer, "resources/pacman.png", &grid, .{ .x = 1, .y = 1 });
+    defer pacman.deinit();
 
     const renderables = [_]Renderable{ level_area.renderable(), grid.renderable(), pacman.renderable() };
 
@@ -55,6 +55,7 @@ pub fn main() !void {
                     const new_window_size = Point(i32){ .x = event.window.data1, .y = event.window.data2 };
                     level_area.scale(new_window_size.intCast(u32));
                     grid.scale(level_area.render_area);
+                    pacman.scale(grid.render_area);
                 },
                 else => {},
             }
