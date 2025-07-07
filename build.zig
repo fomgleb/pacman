@@ -7,19 +7,23 @@ const ResolvedTarget = Build.ResolvedTarget;
 const OptimizeMode = std.builtin.OptimizeMode;
 
 pub fn build(b: *Build) void {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
+    const t = b.standardTargetOptions(.{});
+    const o = b.standardOptimizeOption(.{});
 
-    const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = target, .optimize = optimize });
-    const sdl_dep = b.dependency("sdl", .{ .target = target, .optimize = optimize });
-    const sdl_image = createSdlImageLibrary(b, target, optimize, sdl_dep.artifact("SDL3"));
+    const imports = &[_]Import{
+        .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
+    };
+
+    const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
+    const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o });
+    const sdl_image = createSdlImageLibrary(b, t, o, sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_image.artifact);
     const main_exe = createMainExecutable(b, main_module);
     addCheckStep(b, main_module);
     addRunStep(b, main_exe);
 
-    const test_module = b.createModule(.{ .root_source_file = b.path("src/test.zig"), .target = target, .optimize = optimize });
+    const test_module = b.createModule(.{ .root_source_file = b.path("src/test.zig"), .target = t, .optimize = o, .imports = imports });
     const test_exe = addTestExeStep(b, test_module);
     addTestStep(b, test_exe);
 }

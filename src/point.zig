@@ -16,5 +16,9 @@ pub fn Point(T: type) type {
         pub fn floatFromInt(self: Self, NewType: type) Point(NewType) {
             return Point(NewType){ .x = @floatFromInt(self.x), .y = @floatFromInt(self.y) };
         }
+
+        pub fn intFromFloat(self: Self, NewType: type) Point(NewType) {
+            return Point(NewType){ .x = @intFromFloat(self.x), .y = @intFromFloat(self.y) };
+        }
     };
 }

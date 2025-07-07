@@ -80,3 +80,21 @@ pub fn renderTexture(
         return error.SdlError;
     }
 }
+
+pub fn loadTexture(renderer: *c.SDL_Renderer, file: [*:0]const u8) error{SdlError}!*c.SDL_Texture {
+    return c.IMG_LoadTexture(renderer, file) orelse {
+        log.err("Failed to IMG_LoadTexture: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: enum { nearest, linear }) error{SdlError}!void {
+    const c_scale_mode = switch (scale_mode) {
+        .nearest => c.SDL_SCALEMODE_NEAREST,
+        .linear => c.SDL_SCALEMODE_LINEAR,
+    };
+    if (!c.SDL_SetTextureScaleMode(texture, c_scale_mode)) {
+        log.err("Failed to SDL_SetTextureScaleMode: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+}

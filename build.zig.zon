@@ -12,6 +12,10 @@
             .url = "https://github.com/libsdl-org/SDL_image/archive/refs/tags/release-3.2.4.tar.gz",
             .hash = "N-V-__8AAJB7IgJ65BPSqjqzt7j-5xKDklR0h8c11T60iemj",
         },
+        .entt = .{
+            .url = "git+https://github.com/prime31/zig-ecs#450e9a322ea9087ffc6d471648a371f50067b55b",
+            .hash = "entt-1.0.0-qJPtbOrVAgCbPkX-YI7ERLt_4ACkKiSDSNQAc-6YlxFr",
+        },
     },
     .paths = .{
         "build.zig",
