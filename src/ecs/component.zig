@@ -1,6 +1,6 @@
 pub const RenderArea = Rect(u32);
 pub const Texture = *c.SDL_Texture;
-pub const PositionOnGrid = Point(f32);
+pub const PositionOnGrid = struct { curr: Point(f32), prev: Point(f32) };
 pub const GridSize = Point(u16);
 pub const PacmanTag = void;
 pub const CenteredInWindowTag = void;

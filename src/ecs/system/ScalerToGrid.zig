@@ -28,8 +28,8 @@ pub fn update(self: ScalerToGrid) void {
 
         render_area.* = Rect(u32){
             .position = .{
-                .x = @intFromFloat(grid_render_area_f32.position.x + cell_size.x * position_on_grid.x),
-                .y = @intFromFloat(grid_render_area_f32.position.y + cell_size.y * position_on_grid.y),
+                .x = @intFromFloat(grid_render_area_f32.position.x + cell_size.x * position_on_grid.curr.x),
+                .y = @intFromFloat(grid_render_area_f32.position.y + cell_size.y * position_on_grid.curr.y),
             },
             .size = cell_size.intFromFloat(u32),
         };

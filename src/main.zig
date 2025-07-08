@@ -31,6 +31,7 @@ pub fn main() !void {
 
     const texture_renderer = ecs.system.TextureRenderer{ .reg = &reg };
     const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid };
+    const turning_on_grid = ecs.system.TurningOnGrid{ .reg = &reg };
     const movement_on_grid = ecs.system.MovementOnGrid{ .reg = &reg };
     const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg };
     const debug_grid_renderer = ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer };
@@ -46,10 +47,10 @@ pub fn main() !void {
                 c.SDL_EVENT_WINDOW_CLOSE_REQUESTED => return,
                 c.SDL_EVENT_KEY_DOWN => {
                     switch (event.key.key) {
-                        c.SDLK_UP => player_input_handler.update(.up),
-                        c.SDLK_DOWN => player_input_handler.update(.down),
-                        c.SDLK_LEFT => player_input_handler.update(.left),
-                        c.SDLK_RIGHT => player_input_handler.update(.right),
+                        c.SDLK_UP => player_input_handler.setDesiredDirection(.up),
+                        c.SDLK_DOWN => player_input_handler.setDesiredDirection(.down),
+                        c.SDLK_LEFT => player_input_handler.setDesiredDirection(.left),
+                        c.SDLK_RIGHT => player_input_handler.setDesiredDirection(.right),
                         else => {},
                     }
                 },
@@ -63,6 +64,7 @@ pub fn main() !void {
 
         const delta_time = delta_time_counter.lap();
 
+        turning_on_grid.update();
         movement_on_grid.update(delta_time);
         scaler_to_grid.update();
 

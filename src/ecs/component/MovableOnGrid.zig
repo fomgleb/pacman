@@ -1,4 +1,5 @@
 speed: f32,
-direction: Direction,
+desired_direction: Direction,
+real_direction: Direction,
 
 const Direction = @import("../../direction.zig").Direction;

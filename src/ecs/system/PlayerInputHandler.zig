@@ -5,7 +5,7 @@ const PlayerInputHandler = @This();
 
 reg: *entt.Registry,
 
-pub fn update(self: PlayerInputHandler, direction: Direction) void {
+pub fn setDesiredDirection(self: PlayerInputHandler, direction: Direction) void {
     var view = self.reg.view(.{
         component.PacmanTag,
         component.MovableOnGrid,
@@ -13,6 +13,6 @@ pub fn update(self: PlayerInputHandler, direction: Direction) void {
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
-        movable_on_grid.direction = direction;
+        movable_on_grid.desired_direction = direction;
     }
 }
