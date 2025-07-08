@@ -4,11 +4,10 @@ const component = @import("../component.zig");
 const sdl = @import("../../sdl.zig");
 const c = @import("../../c.zig");
 const entt = @import("entt");
-const TextureRenderer = @This();
 
 reg: *entt.Registry,
 
-pub fn update(self: TextureRenderer) !void {
+pub fn update(self: @This()) !void {
     var view = self.reg.view(.{
         component.RenderArea,
         component.Texture,

@@ -2,11 +2,10 @@ const component = @import("../component.zig");
 const Point = @import("../../point.zig").Point;
 const Rect = @import("../../rect.zig").Rect;
 const entt = @import("entt");
-const PlacerInWindowCenter = @This();
 
 reg: *entt.Registry,
 
-pub fn update(self: PlacerInWindowCenter, window_size: Point(u32)) void {
+pub fn update(self: @This(), window_size: Point(u32)) void {
     var view = self.reg.view(.{
         component.CenteredInWindowTag,
         component.RenderArea,

@@ -4,12 +4,11 @@ const Rect = @import("../../rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
 const c = @import("../../c.zig");
 const entt = @import("entt");
-const PlacerInWindowCenter = @This();
 
 reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
 
-pub fn update(self: PlacerInWindowCenter) !void {
+pub fn update(self: @This()) !void {
     var view = self.reg.view(.{
         component.GridSize,
         component.RenderArea,

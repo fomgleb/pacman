@@ -2,12 +2,11 @@ const Point = @import("../../point.zig").Point;
 const Rect = @import("../../rect.zig").Rect;
 const component = @import("../component.zig");
 const entt = @import("entt");
-const ScalerToGrid = @This();
 
 reg: *entt.Registry,
 grid: entt.Entity,
 
-pub fn update(self: ScalerToGrid) void {
+pub fn update(self: @This()) void {
     var view = self.reg.view(.{
         component.PositionOnGrid,
         component.RenderArea,

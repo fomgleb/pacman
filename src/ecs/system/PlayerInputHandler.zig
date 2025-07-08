@@ -1,11 +1,10 @@
 const Direction = @import("../../direction.zig").Direction;
 const component = @import("../component.zig");
 const entt = @import("entt");
-const PlayerInputHandler = @This();
 
 reg: *entt.Registry,
 
-pub fn setDesiredDirection(self: PlayerInputHandler, direction: Direction) void {
+pub fn setDesiredDirection(self: @This(), direction: Direction) void {
     var view = self.reg.view(.{
         component.PacmanTag,
         component.MovableOnGrid,

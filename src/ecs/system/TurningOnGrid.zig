@@ -3,11 +3,10 @@ const Direction = @import("../../direction.zig").Direction;
 const time = @import("std").time;
 const component = @import("../component.zig");
 const entt = @import("entt");
-const ScalerToGrid = @This();
 
 reg: *entt.Registry,
 
-pub fn update(self: ScalerToGrid) void {
+pub fn update(self: @This()) void {
     var view = self.reg.view(.{
         component.MovableOnGrid,
         component.PositionOnGrid,
