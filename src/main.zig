@@ -4,8 +4,6 @@ const Timer = std.time.Timer;
 const Renderable = @import("Renderable.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
 const Point = @import("point.zig").Point;
-const LevelArea = @import("LevelArea.zig");
-const Grid = @import("Grid.zig");
 const ecs = @import("ecs.zig");
 const sdl = @import("sdl.zig");
 const c = @import("c.zig");
@@ -27,18 +25,16 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
-    var level_area = LevelArea.init(sdl_renderer, level_aspect_ratio, initial_window_size);
-    var grid = Grid.init(sdl_renderer, level_area.render_area, grid_size);
+    const grid: entt.Entity = ecs.entity.Grid.init(&reg, grid_size);
+    var pacman = try ecs.entity.Pacman.init(&reg, sdl_renderer);
+    defer pacman.deinit();
 
     const texture_renderer = ecs.system.TextureRenderer{ .reg = &reg };
-    const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = &grid };
+    const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid };
     const movement_on_grid = ecs.system.MovementOnGrid{ .reg = &reg };
     const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg };
-
-    var pacman_entity = try ecs.entity.Pacman.init(&reg, sdl_renderer);
-    defer pacman_entity.deinit();
-
-    const renderables = [_]Renderable{ level_area.renderable(), grid.renderable() };
+    const debug_grid_renderer = ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer };
+    const placer_in_window_center = ecs.system.PlacerInWindowCenter{ .reg = &reg };
 
     var fps_limiter = try FpsLimiter.init(60);
     var delta_time_counter = try Timer.start();
@@ -59,8 +55,7 @@ pub fn main() !void {
                 },
                 c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
                     const new_window_size = Point(i32){ .x = event.window.data1, .y = event.window.data2 };
-                    level_area.scale(new_window_size.intCast(u32));
-                    grid.scale(level_area.render_area);
+                    placer_in_window_center.update(new_window_size.intCast(u32));
                 },
                 else => {},
             }
@@ -73,9 +68,7 @@ pub fn main() !void {
 
         try sdl.setRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         try sdl.renderClear(sdl_renderer);
-        for (renderables) |renderable| {
-            try renderable.render();
-        }
+        try debug_grid_renderer.update();
         try texture_renderer.update();
         try sdl.renderPresent(sdl_renderer);
 
