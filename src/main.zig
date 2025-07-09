@@ -11,8 +11,6 @@ const entt = @import("entt");
 
 const window_title = "Pacman";
 const initial_window_size = Point(u32){ .x = 600, .y = 400 };
-const level_aspect_ratio = Point(u8){ .x = 2, .y = 1 };
-const grid_size = Point(u16){ .x = 20, .y = 10 };
 
 pub fn main() !void {
     try sdl.initSubSystem(c.SDL_INIT_VIDEO);
@@ -25,17 +23,22 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
-    const grid: entt.Entity = ecs.entity.Grid.init(&reg, grid_size);
+    const grid_entity = ecs.entity.Grid.init(&reg);
+
     var pacman = try ecs.entity.Pacman.init(&reg, sdl_renderer);
     defer pacman.deinit();
 
+    const level_loader = try ecs.system.init.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid_entity);
+    defer level_loader.deinit();
+
     const texture_renderer = ecs.system.TextureRenderer{ .reg = &reg };
-    const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid };
+    const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity };
     const turning_on_grid = ecs.system.TurningOnGrid{ .reg = &reg };
     const movement_on_grid = ecs.system.MovementOnGrid{ .reg = &reg };
     const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg };
     const debug_grid_renderer = ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer };
     const placer_in_window_center = ecs.system.PlacerInWindowCenter{ .reg = &reg };
+    const grid_walls_renderer = ecs.system.GridWallsRenderer{ .reg = &reg, .renderer = sdl_renderer };
 
     var fps_limiter = try FpsLimiter.init(60);
     var delta_time_counter = try Timer.start();
@@ -71,6 +74,7 @@ pub fn main() !void {
         try sdl.setRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         try sdl.renderClear(sdl_renderer);
         try debug_grid_renderer.update();
+        try grid_walls_renderer.update();
         try texture_renderer.update();
         try sdl.renderPresent(sdl_renderer);
 

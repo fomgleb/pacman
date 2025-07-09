@@ -1,13 +1,14 @@
-const Point = @import("../../point.zig").Point;
 const component = @import("../component.zig");
 const entt = @import("entt");
-const Grid = @This();
 
-pub fn init(reg: *entt.Registry, size: Point(u16)) entt.Entity {
+pub fn init(reg: *entt.Registry) entt.Entity {
     const entity = reg.create();
+
     reg.add(entity, component.CenteredInWindowTag{});
-    reg.add(entity, component.AspectRatio.init(size));
-    reg.add(entity, component.GridSize{ .x = size.x, .y = size.y });
-    reg.add(entity, component.RenderArea{ .position = .{ .x = 0, .y = 0 }, .size = .{ .x = 0, .y = 0 } });
+    reg.add(entity, component.AspectRatio{ .h = undefined, .w = undefined });
+    reg.add(entity, component.GridSize{ .x = undefined, .y = undefined });
+    reg.add(entity, component.GridMembers{ .mem = undefined, .size = undefined, .allocator = undefined });
+    reg.add(entity, component.RenderArea{ .position = undefined, .size = undefined });
+
     return entity;
 }
