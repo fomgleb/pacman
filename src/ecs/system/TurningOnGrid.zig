@@ -9,13 +9,13 @@ reg: *entt.Registry,
 pub fn update(self: @This()) void {
     var view = self.reg.view(.{
         component.MovableOnGrid,
-        component.PositionOnGrid,
+        component.GridCellPosition,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
         if (movable_on_grid.desired_direction == movable_on_grid.real_direction) continue;
-        const position_on_grid = view.get(component.PositionOnGrid, entity);
+        const grid_cell_position = view.get(component.GridCellPosition, entity);
 
         if (movable_on_grid.desired_direction.isOppositeOf(movable_on_grid.real_direction)) {
             movable_on_grid.real_direction = movable_on_grid.desired_direction;
@@ -25,12 +25,12 @@ pub fn update(self: @This()) void {
         const result = getTurningPositionAndLeft(
             movable_on_grid.real_direction,
             movable_on_grid.desired_direction,
-            position_on_grid.prev,
-            position_on_grid.curr,
+            grid_cell_position.previous,
+            grid_cell_position.current,
         ) orelse continue;
 
         movable_on_grid.real_direction = movable_on_grid.desired_direction;
-        position_on_grid.curr = result.new_position;
+        grid_cell_position.current = result.new_position;
     }
 }
 

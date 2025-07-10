@@ -8,7 +8,7 @@ grid: entt.Entity,
 
 pub fn update(self: @This()) void {
     var view = self.reg.view(.{
-        component.PositionOnGrid,
+        component.GridCellPosition,
         component.RenderArea,
     }, .{});
     var iter = view.entityIterator();
@@ -17,7 +17,7 @@ pub fn update(self: @This()) void {
     const grid_render_area_f32 = self.reg.getConst(component.RenderArea, self.grid).floatFromInt(f32);
 
     while (iter.next()) |entity| {
-        const position_on_grid = view.getConst(component.PositionOnGrid, entity);
+        const grid_cell_position = view.getConst(component.GridCellPosition, entity);
         const render_area = view.get(component.RenderArea, entity);
 
         const cell_size = Point(f32){
@@ -27,8 +27,8 @@ pub fn update(self: @This()) void {
 
         render_area.* = Rect(u32){
             .position = .{
-                .x = @intFromFloat(grid_render_area_f32.position.x + cell_size.x * position_on_grid.curr.x),
-                .y = @intFromFloat(grid_render_area_f32.position.y + cell_size.y * position_on_grid.curr.y),
+                .x = @intFromFloat(grid_render_area_f32.position.x + cell_size.x * grid_cell_position.current.x),
+                .y = @intFromFloat(grid_render_area_f32.position.y + cell_size.y * grid_cell_position.current.y),
             },
             .size = cell_size.intFromFloat(u32),
         };
