@@ -7,7 +7,7 @@ pub fn init(reg: *entt.Registry) entt.Entity {
     reg.add(entity, component.CenteredInWindowTag{});
     reg.add(entity, component.AspectRatio{ .h = undefined, .w = undefined });
     reg.add(entity, component.GridSize{ .x = undefined, .y = undefined });
-    reg.add(entity, component.GridMembers{ .mem = undefined, .size = undefined, .allocator = undefined });
+    reg.add(entity, component.GridCells{ .mem = undefined, .size = undefined, .allocator = undefined });
     reg.add(entity, component.RenderArea{ .position = undefined, .size = undefined });
 
     return entity;

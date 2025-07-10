@@ -6,7 +6,7 @@ const Allocator = std.mem.Allocator;
 const component = @import("../../component.zig");
 const entt = @import("entt");
 
-grid_members: component.GridMembers,
+grid_members: component.GridCells,
 
 const max_level_file_size = 1_000_000_000;
 
@@ -20,8 +20,8 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
     const grid_size = reg.get(component.GridSize, grid_entity);
     grid_size.* = component.GridSize{ .x = level_size.x, .y = level_size.y };
 
-    const grid_members = reg.get(component.GridMembers, grid_entity);
-    grid_members.* = try component.GridMembers.init(allocator, level_size.as(usize));
+    const grid_cells = reg.get(component.GridCells, grid_entity);
+    grid_cells.* = try component.GridCells.init(allocator, level_size.as(usize));
 
     var row_iterator = std.mem.splitScalar(u8, level_file, '\n');
     var row_idx: usize = 0;
@@ -36,11 +36,11 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
                     return error.BadLevelFile;
                 },
             };
-            grid_members.set(.{ .x = column_idx, .y = row_idx }, new_grid_member);
+            grid_cells.set(.{ .x = column_idx, .y = row_idx }, new_grid_member);
         }
     }
 
-    return .{ .grid_members = grid_members.* };
+    return .{ .grid_members = grid_cells.* };
 }
 
 pub fn deinit(self: @This()) void {

@@ -10,21 +10,21 @@ renderer: *c.SDL_Renderer,
 
 pub fn update(self: @This()) !void {
     var view = self.reg.view(.{
-        component.GridMembers,
+        component.GridCells,
         component.RenderArea,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const grid_members = view.getConst(component.GridMembers, entity);
+        const grid_cells = view.getConst(component.GridCells, entity);
         const render_area_f32 = view.getConst(component.RenderArea, entity).floatFromInt(f32);
 
-        const cell_width = render_area_f32.size.x / @as(f32, @floatFromInt(grid_members.size.x));
-        const cell_height = render_area_f32.size.y / @as(f32, @floatFromInt(grid_members.size.y));
+        const cell_width = render_area_f32.size.x / @as(f32, @floatFromInt(grid_cells.size.x));
+        const cell_height = render_area_f32.size.y / @as(f32, @floatFromInt(grid_cells.size.y));
 
         try sdl.setRenderDrawColor(self.renderer, 0, 0, 0, 255);
-        for (0..grid_members.size.x) |x| {
-            for (0..grid_members.size.y) |y| {
-                if (grid_members.get(.{ .x = x, .y = y }) != .wall) continue;
+        for (0..grid_cells.size.x) |x| {
+            for (0..grid_cells.size.y) |y| {
+                if (grid_cells.get(.{ .x = x, .y = y }) != .wall) continue;
 
                 const x_f32: f32 = @floatFromInt(x);
                 const y_f32: f32 = @floatFromInt(y);
