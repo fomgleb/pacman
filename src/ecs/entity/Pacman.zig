@@ -10,7 +10,7 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!@Thi
     try sdl.setTextureScaleMode(texture, .nearest);
 
     const pacman_entity = reg.create();
-    reg.add(pacman_entity, component.PacmanTag{});
+    reg.add(pacman_entity, component.PlayerTag{});
     reg.add(pacman_entity, component.RenderArea{ .position = .{ .x = 0, .y = 0 }, .size = .{ .x = 0, .y = 0 } });
     reg.add(pacman_entity, texture);
     reg.add(pacman_entity, component.PositionOnGrid{ .curr = .{ .x = 5, .y = 5 }, .prev = .{ .x = 5, .y = 5 } });

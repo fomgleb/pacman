@@ -6,7 +6,7 @@ reg: *entt.Registry,
 
 pub fn setDesiredDirection(self: @This(), direction: Direction) void {
     var view = self.reg.view(.{
-        component.PacmanTag,
+        component.PlayerTag,
         component.MovableOnGrid,
     }, .{});
     var iter = view.entityIterator();
