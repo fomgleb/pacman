@@ -1,5 +1,5 @@
 pub const GridCell = enum {
     wall,
-    pacman,
+    pacman_spawn,
     empty,
 };
