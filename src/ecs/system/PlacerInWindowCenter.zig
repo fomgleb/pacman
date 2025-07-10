@@ -1,11 +1,11 @@
 const component = @import("../component.zig");
-const Point = @import("../../point.zig").Point;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const Rect = @import("../../rect.zig").Rect;
 const entt = @import("entt");
 
 reg: *entt.Registry,
 
-pub fn update(self: @This(), window_size: Point(u32)) void {
+pub fn update(self: @This(), window_size: Vec2(u32)) void {
     var view = self.reg.view(.{
         component.CenteredInWindowTag,
         component.RenderArea,
@@ -20,17 +20,17 @@ pub fn update(self: @This(), window_size: Point(u32)) void {
     }
 }
 
-fn computeScreenArea(aspect_ratio: Point(u16), window_size: Point(u32)) Rect(u32) {
+fn computeScreenArea(aspect_ratio: Vec2(u16), window_size: Vec2(u32)) Rect(u32) {
     const scale_x = window_size.x / aspect_ratio.x;
     const scale_y = window_size.y / aspect_ratio.y;
     const scale_ = @min(scale_x, scale_y);
 
-    const size = Point(u32){
+    const size = Vec2(u32){
         .x = aspect_ratio.x * scale_,
         .y = aspect_ratio.y * scale_,
     };
 
-    const position = Point(u32){
+    const position = Vec2(u32){
         .x = (window_size.x - size.x) / 2,
         .y = (window_size.y - size.y) / 2,
     };

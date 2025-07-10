@@ -1,4 +1,4 @@
-const Point = @import("../../point.zig").Point;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const Direction = @import("../../direction.zig").Direction;
 const time = @import("std").time;
 const component = @import("../component.zig");
@@ -37,9 +37,9 @@ pub fn update(self: @This()) void {
 fn getTurningPositionAndLeft(
     real_dir: Direction,
     desired_dir: Direction,
-    prev_pos: Point(f32),
-    curr_pos: Point(f32),
-) ?struct { new_position: Point(f32), left: f32 } {
+    prev_pos: Vec2(f32),
+    curr_pos: Vec2(f32),
+) ?struct { new_position: Vec2(f32), left: f32 } {
     switch (real_dir) {
         .up, .down => {
             if (desired_dir != .left and desired_dir != .right) return null;

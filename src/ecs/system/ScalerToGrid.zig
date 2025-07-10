@@ -1,4 +1,4 @@
-const Point = @import("../../point.zig").Point;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const Rect = @import("../../rect.zig").Rect;
 const component = @import("../component.zig");
 const entt = @import("entt");
@@ -20,7 +20,7 @@ pub fn update(self: @This()) void {
         const grid_cell_position = view.getConst(component.GridCellPosition, entity);
         const render_area = view.get(component.RenderArea, entity);
 
-        const cell_size = Point(f32){
+        const cell_size = Vec2(f32){
             .x = grid_render_area_f32.size.x / grid_size_f32.x,
             .y = grid_render_area_f32.size.y / grid_size_f32.y,
         };

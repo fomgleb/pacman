@@ -3,14 +3,14 @@ const log = std.log;
 const Timer = std.time.Timer;
 const Renderable = @import("Renderable.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
-const Point = @import("point.zig").Point;
+const Vec2 = @import("Vec2.zig").Vec2;
 const ecs = @import("ecs.zig");
 const sdl = @import("sdl.zig");
 const c = @import("c.zig");
 const entt = @import("entt");
 
 const window_title = "Pacman";
-const initial_window_size = Point(u32){ .x = 600, .y = 400 };
+const initial_window_size = Vec2(u32){ .x = 600, .y = 400 };
 
 pub fn main() !void {
     try sdl.initSubSystem(c.SDL_INIT_VIDEO);
@@ -58,7 +58,7 @@ pub fn main() !void {
                     }
                 },
                 c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
-                    const new_window_size = Point(i32){ .x = event.window.data1, .y = event.window.data2 };
+                    const new_window_size = Vec2(i32){ .x = event.window.data1, .y = event.window.data2 };
                     placer_in_window_center.update(new_window_size.intCast(u32));
                 },
                 else => {},

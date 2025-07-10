@@ -1,6 +1,6 @@
 const std = @import("std");
 const log = std.log.scoped(.@"Level Loader");
-const Point = @import("../../../point.zig").Point;
+const Vec2 = @import("../../../Vec2.zig").Vec2;
 const GridCell = @import("../../../GridCell.zig").GridCell;
 const Allocator = std.mem.Allocator;
 const component = @import("../../component.zig");
@@ -47,7 +47,7 @@ pub fn deinit(self: @This()) void {
     self.grid_members.deinit();
 }
 
-fn getLevelDimensions(level_content: []const u8) error{NotAllRowSizesAreSame}!Point(u16) {
+fn getLevelDimensions(level_content: []const u8) error{NotAllRowSizesAreSame}!Vec2(u16) {
     var rows = std.mem.splitScalar(u8, level_content, '\n');
 
     var width: ?u16 = null;
@@ -64,5 +64,5 @@ fn getLevelDimensions(level_content: []const u8) error{NotAllRowSizesAreSame}!Po
         }
     }
 
-    return Point(u16){ .x = width.?, .y = height };
+    return Vec2(u16){ .x = width.?, .y = height };
 }

@@ -1,11 +1,11 @@
-const Point = @import("point.zig").Point;
+const Vec2 = @import("Vec2.zig").Vec2;
 
 pub fn Rect(T: type) type {
     return struct {
         const Self = @This();
 
-        position: Point(T),
-        size: Point(T),
+        position: Vec2(T),
+        size: Vec2(T),
 
         pub fn floatFromInt(self: Self, NewType: type) Rect(NewType) {
             return Rect(NewType){

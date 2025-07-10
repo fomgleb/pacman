@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const Point = @import("../../point.zig").Point;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const Rect = @import("../../rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
 const c = @import("../../c.zig");

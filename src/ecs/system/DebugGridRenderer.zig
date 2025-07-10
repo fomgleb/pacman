@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const Point = @import("../../point.zig").Point;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const Rect = @import("../../rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
 const c = @import("../../c.zig");
@@ -15,7 +15,7 @@ pub fn update(self: @This()) !void {
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const grid_size: Point(u16) = view.getConst(component.GridSize, entity);
+        const grid_size: Vec2(u16) = view.getConst(component.GridSize, entity);
         const render_area_f32 = view.getConst(component.RenderArea, entity).floatFromInt(f32);
 
         try sdl.setRenderDrawColor(self.renderer, 50, 214, 24, 255);

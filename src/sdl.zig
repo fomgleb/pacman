@@ -1,6 +1,6 @@
 const c = @import("c.zig");
 const log = @import("std").log.scoped(.sdl);
-const Point = @import("point.zig").Point;
+const Vec2 = @import("Vec2.zig").Vec2;
 const Rect = @import("rect.zig").Rect;
 
 pub fn initSubSystem(flags: c.SDL_InitFlags) error{SdlError}!void {
@@ -10,7 +10,7 @@ pub fn initSubSystem(flags: c.SDL_InitFlags) error{SdlError}!void {
     }
 }
 
-pub fn createWindow(title: [*:0]const u8, size: Point(u32), flags: c.SDL_WindowFlags) error{SdlError}!*c.SDL_Window {
+pub fn createWindow(title: [*:0]const u8, size: Vec2(u32), flags: c.SDL_WindowFlags) error{SdlError}!*c.SDL_Window {
     return c.SDL_CreateWindow(title, @intCast(size.x), @intCast(size.y), flags) orelse {
         log.err("Failed to SDL_CreateWindow: {s}", .{c.SDL_GetError()});
         return error.SdlError;
