@@ -1,7 +1,7 @@
 const std = @import("std");
 const log = std.log.scoped(.@"Level Loader");
 const Point = @import("../../../point.zig").Point;
-const GridMember = @import("../../../GridMember.zig").GridMember;
+const GridCell = @import("../../../GridCell.zig").GridCell;
 const Allocator = std.mem.Allocator;
 const component = @import("../../component.zig");
 const entt = @import("entt");
@@ -27,7 +27,7 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
     var row_idx: usize = 0;
     while (row_iterator.next()) |row| : (row_idx += 1) {
         for (row, 0..) |character, column_idx| {
-            const new_grid_member: GridMember = switch (character) {
+            const new_grid_cell: GridCell = switch (character) {
                 '#' => .wall,
                 'P' => .pacman,
                 ' ' => .empty,
@@ -36,7 +36,7 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
                     return error.BadLevelFile;
                 },
             };
-            grid_cells.set(.{ .x = column_idx, .y = row_idx }, new_grid_member);
+            grid_cells.set(.{ .x = column_idx, .y = row_idx }, new_grid_cell);
         }
     }
 

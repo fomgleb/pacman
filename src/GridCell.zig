@@ -1,4 +1,4 @@
-pub const GridMember = enum {
+pub const GridCell = enum {
     wall,
     pacman,
     empty,
