@@ -4,6 +4,7 @@ const c = @import("../../c.zig");
 const entt = @import("entt");
 
 texture: *c.SDL_Texture,
+entity: entt.Entity,
 
 pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!@This() {
     const texture = try sdl.loadTexture(renderer, "resources/pacman.png");
@@ -16,7 +17,7 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!@Thi
     reg.add(pacman_entity, component.GridCellPosition{ .current = .{ .x = 5, .y = 5 }, .previous = .{ .x = 5, .y = 5 } });
     reg.add(pacman_entity, component.MovableOnGrid{ .desired_direction = .right, .real_direction = .right, .speed = 3 });
 
-    return .{ .texture = texture };
+    return .{ .texture = texture, .entity = pacman_entity };
 }
 
 pub fn deinit(self: *@This()) void {

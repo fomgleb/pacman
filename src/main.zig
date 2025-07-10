@@ -23,6 +23,7 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
+    const events_holder_entity = reg.create();
     const grid_entity = ecs.entity.Grid.init(&reg);
 
     var pacman = try ecs.entity.Pacman.init(&reg, sdl_renderer);
@@ -35,10 +36,11 @@ pub fn main() !void {
     const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity };
     const turning_on_grid = ecs.system.TurningOnGrid{ .reg = &reg };
     const movement_on_grid = ecs.system.MovementOnGrid{ .reg = &reg };
-    const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg };
+    const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg, .pacman_entity = pacman.entity, .events_holder_entity = events_holder_entity };
     const debug_grid_renderer = ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer };
     const placer_in_window_center = ecs.system.PlacerInWindowCenter{ .reg = &reg };
     const grid_walls_renderer = ecs.system.GridWallsRenderer{ .reg = &reg, .renderer = sdl_renderer };
+    const events_deleter = ecs.system.EventsDeleter{ .reg = &reg, .events_holder_entity = events_holder_entity };
 
     var fps_limiter = try FpsLimiter.init(60);
     var delta_time_counter = try Timer.start();
@@ -48,15 +50,7 @@ pub fn main() !void {
         while (c.SDL_PollEvent(&event)) {
             switch (event.type) {
                 c.SDL_EVENT_WINDOW_CLOSE_REQUESTED => return,
-                c.SDL_EVENT_KEY_DOWN => {
-                    switch (event.key.key) {
-                        c.SDLK_UP => player_input_handler.setDesiredDirection(.up),
-                        c.SDLK_DOWN => player_input_handler.setDesiredDirection(.down),
-                        c.SDLK_LEFT => player_input_handler.setDesiredDirection(.left),
-                        c.SDLK_RIGHT => player_input_handler.setDesiredDirection(.right),
-                        else => {},
-                    }
-                },
+                c.SDL_EVENT_KEY_DOWN => ecs.system.SdlKeyDownEventHandler.update(&reg, events_holder_entity, event.key.key),
                 c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
                     const new_window_size = Vec2(i32){ .x = event.window.data1, .y = event.window.data2 };
                     placer_in_window_center.update(new_window_size.intCast(u32));
@@ -67,6 +61,7 @@ pub fn main() !void {
 
         const delta_time = delta_time_counter.lap();
 
+        player_input_handler.update();
         turning_on_grid.update();
         movement_on_grid.update(delta_time);
         scaler_to_grid.update();
@@ -77,6 +72,8 @@ pub fn main() !void {
         try grid_walls_renderer.update();
         try texture_renderer.update();
         try sdl.renderPresent(sdl_renderer);
+
+        events_deleter.update();
 
         fps_limiter.waitFrameEnd();
     }
