@@ -20,8 +20,8 @@ pub fn update(self: *const @This()) void {
         grid_cell_position.previous = grid_cell_position.current;
 
         const delta_time_f32_s = @as(f32, @floatFromInt(delta_time)) / time.ns_per_s;
-        const step = movable_on_grid.speed * delta_time_f32_s;
-        switch (movable_on_grid.real_direction) {
+        const step = movable_on_grid.current_speed * delta_time_f32_s;
+        switch (movable_on_grid.current_direction) {
             .up => grid_cell_position.current.y -= step,
             .down => grid_cell_position.current.y += step,
             .left => grid_cell_position.current.x -= step,
