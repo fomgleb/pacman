@@ -1,11 +1,15 @@
 const component = @import("../component.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
 const Rect = @import("../../rect.zig").Rect;
+const System = @import("../../System.zig");
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
+events_holder_entity: entt.Entity,
 
-pub fn update(self: @This(), window_size: Vec2(u32)) void {
+pub fn update(self: *const @This()) void {
+    const new_window_size = (self.reg.tryGetConst(component.WindowSizeChangedEvent, self.events_holder_entity) orelse return).new_value;
+
     var view = self.reg.view(.{
         component.CenteredInWindowTag,
         component.RenderArea,
@@ -16,8 +20,12 @@ pub fn update(self: @This(), window_size: Vec2(u32)) void {
         const aspect_ratio = view.getConst(component.AspectRatio, entity);
         const render_area = view.get(component.RenderArea, entity);
 
-        render_area.* = computeScreenArea(.{ .x = aspect_ratio.w, .y = aspect_ratio.h }, window_size);
+        render_area.* = computeScreenArea(.{ .x = aspect_ratio.w, .y = aspect_ratio.h }, new_window_size);
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }
 
 fn computeScreenArea(aspect_ratio: Vec2(u16), window_size: Vec2(u32)) Rect(u32) {

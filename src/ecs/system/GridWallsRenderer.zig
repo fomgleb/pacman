@@ -1,14 +1,15 @@
 const component = @import("../component.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const c = @import("../../c.zig");
 const Rect = @import("../../rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
-const c = @import("../../c.zig");
+const System = @import("../../System.zig");
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
 
-pub fn update(self: @This()) !void {
+pub fn update(self: *const @This()) !void {
     var view = self.reg.view(.{
         component.GridCells,
         component.RenderArea,
@@ -35,4 +36,8 @@ pub fn update(self: @This()) !void {
             }
         }
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }

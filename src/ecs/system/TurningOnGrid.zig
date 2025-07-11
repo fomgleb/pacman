@@ -1,12 +1,13 @@
-const Vec2 = @import("../../Vec2.zig").Vec2;
-const Direction = @import("../../direction.zig").Direction;
 const time = @import("std").time;
 const component = @import("../component.zig");
+const Direction = @import("../../direction.zig").Direction;
+const System = @import("../../System.zig");
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
 
-pub fn update(self: @This()) void {
+pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.MovableOnGrid,
         component.GridCellPosition,
@@ -32,6 +33,10 @@ pub fn update(self: @This()) void {
         movable_on_grid.real_direction = movable_on_grid.desired_direction;
         grid_cell_position.current = result.new_position;
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }
 
 fn getTurningPositionAndLeft(

@@ -6,9 +6,14 @@ pub const GridCells = Array2D(GridCell);
 pub const PlayerTag = void;
 pub const CenteredInWindowTag = void;
 pub const PlayerInputEvent = struct { direction: Direction };
+pub const WindowSizeChangedEvent = struct { new_value: Vec2(u32) };
+pub const DeltaTimeMeasuredEvent = struct { value: u64 };
+pub const QuitEvent = void;
+pub const Timer = std.time.Timer;
 pub const AspectRatio = @import("component/AspectRatio.zig");
 pub const MovableOnGrid = @import("component/MovableOnGrid.zig");
 
+const std = @import("std");
 const Array2D = @import("../Array2D.zig").Array2D;
 const c = @import("../c.zig");
 const Direction = @import("../direction.zig").Direction;

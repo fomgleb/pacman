@@ -1,13 +1,14 @@
 //! Renders Texture in RenderArea.
 
 const component = @import("../component.zig");
-const sdl = @import("../../sdl.zig");
 const c = @import("../../c.zig");
+const sdl = @import("../../sdl.zig");
+const System = @import("../../System.zig");
 const entt = @import("entt");
 
 reg: *entt.Registry,
 
-pub fn update(self: @This()) !void {
+pub fn update(self: *const @This()) !void {
     var view = self.reg.view(.{
         component.RenderArea,
         component.Texture,
@@ -20,4 +21,8 @@ pub fn update(self: @This()) !void {
         const renderer = try sdl.getRendererFromTexture(renderable_texture);
         try sdl.renderTexture(renderer, renderable_texture, null, render_area.floatFromInt(f32));
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }

@@ -1,12 +1,13 @@
-const Vec2 = @import("../../Vec2.zig").Vec2;
-const Rect = @import("../../rect.zig").Rect;
 const component = @import("../component.zig");
+const Rect = @import("../../rect.zig").Rect;
+const System = @import("../../System.zig");
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
 grid: entt.Entity,
 
-pub fn update(self: @This()) void {
+pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.GridCellPosition,
         component.RenderArea,
@@ -33,4 +34,8 @@ pub fn update(self: @This()) void {
             .size = cell_size.intFromFloat(u32),
         };
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }

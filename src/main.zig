@@ -1,12 +1,9 @@
 const std = @import("std");
-const log = std.log;
-const Timer = std.time.Timer;
-const Renderable = @import("Renderable.zig");
-const FpsLimiter = @import("FpsLimiter.zig");
-const Vec2 = @import("Vec2.zig").Vec2;
+const c = @import("c.zig");
 const ecs = @import("ecs.zig");
 const sdl = @import("sdl.zig");
-const c = @import("c.zig");
+const System = @import("System.zig");
+const Vec2 = @import("Vec2.zig").Vec2;
 const entt = @import("entt");
 
 const window_title = "Pacman";
@@ -23,6 +20,8 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
+    const fps_entity = try ecs.entity.Fps.init(&reg);
+    const delta_time_entity = try ecs.entity.DeltaTime.init(&reg);
     const events_holder_entity = reg.create();
     const grid_entity = ecs.entity.Grid.init(&reg);
 
@@ -32,49 +31,27 @@ pub fn main() !void {
     const level_loader = try ecs.system.init.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid_entity);
     defer level_loader.deinit();
 
-    const texture_renderer = ecs.system.TextureRenderer{ .reg = &reg };
-    const scaler_to_grid = ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity };
-    const turning_on_grid = ecs.system.TurningOnGrid{ .reg = &reg };
-    const movement_on_grid = ecs.system.MovementOnGrid{ .reg = &reg };
-    const player_input_handler = ecs.system.PlayerInputHandler{ .reg = &reg, .pacman_entity = pacman.entity, .events_holder_entity = events_holder_entity };
-    const debug_grid_renderer = ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer };
-    const placer_in_window_center = ecs.system.PlacerInWindowCenter{ .reg = &reg };
-    const grid_walls_renderer = ecs.system.GridWallsRenderer{ .reg = &reg, .renderer = sdl_renderer };
-    const events_deleter = ecs.system.EventsDeleter{ .reg = &reg, .events_holder_entity = events_holder_entity };
+    const systems = [_]System{
+        (ecs.system.SdlEventsHandler{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
+        (ecs.system.DeltaTimeCounter{ .reg = &reg, .events_holder_entity = events_holder_entity, .delta_time_entity = delta_time_entity }).system(),
+        (ecs.system.PlayerInputHandler{ .reg = &reg, .events_holder_entity = events_holder_entity, .pacman_entity = pacman.entity }).system(),
 
-    var fps_limiter = try FpsLimiter.init(60);
-    var delta_time_counter = try Timer.start();
+        (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
+        (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
 
-    while (true) {
-        var event: c.SDL_Event = undefined;
-        while (c.SDL_PollEvent(&event)) {
-            switch (event.type) {
-                c.SDL_EVENT_WINDOW_CLOSE_REQUESTED => return,
-                c.SDL_EVENT_KEY_DOWN => ecs.system.SdlKeyDownEventHandler.update(&reg, events_holder_entity, event.key.key),
-                c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
-                    const new_window_size = Vec2(i32){ .x = event.window.data1, .y = event.window.data2 };
-                    placer_in_window_center.update(new_window_size.intCast(u32));
-                },
-                else => {},
-            }
-        }
+        (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
+        (ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity }).system(),
 
-        const delta_time = delta_time_counter.lap();
+        (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
+        (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
+        (ecs.system.GridWallsRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
+        (ecs.system.TextureRenderer{ .reg = &reg }).system(),
+        (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
 
-        player_input_handler.update();
-        turning_on_grid.update();
-        movement_on_grid.update(delta_time);
-        scaler_to_grid.update();
+        (ecs.system.FpsLimiter.init(&reg, fps_entity, 60)).system(),
+    };
 
-        try sdl.setRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
-        try sdl.renderClear(sdl_renderer);
-        try debug_grid_renderer.update();
-        try grid_walls_renderer.update();
-        try texture_renderer.update();
-        try sdl.renderPresent(sdl_renderer);
-
-        events_deleter.update();
-
-        fps_limiter.waitFrameEnd();
-    }
+    while (!reg.has(ecs.component.QuitEvent, events_holder_entity))
+        for (systems) |system|
+            try system.update();
 }

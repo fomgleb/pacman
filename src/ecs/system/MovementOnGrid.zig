@@ -1,10 +1,13 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
+const System = @import("../../System.zig");
 const entt = @import("entt");
 
 reg: *entt.Registry,
+events_holder_entity: entt.Entity,
 
-pub fn update(self: @This(), delta_time: u64) void {
+pub fn update(self: *const @This()) void {
+    const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder_entity).value;
     var view = self.reg.view(.{
         component.MovableOnGrid,
         component.GridCellPosition,
@@ -25,4 +28,8 @@ pub fn update(self: @This(), delta_time: u64) void {
             .right => grid_cell_position.current.x += step,
         }
     }
+}
+
+pub fn system(self: *const @This()) System {
+    return System.init(self);
 }
