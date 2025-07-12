@@ -10,6 +10,7 @@ pub const WindowSizeChangedEvent = struct { new_value: Vec2(u32) };
 pub const DeltaTimeMeasuredEvent = struct { value: u64 };
 pub const QuitEvent = void;
 pub const Timer = std.time.Timer;
+pub const GridMembership = struct { grid_entity: entt.Entity };
 pub const AspectRatio = @import("component/AspectRatio.zig");
 pub const MovableOnGrid = @import("component/MovableOnGrid.zig");
 
@@ -20,3 +21,4 @@ const Direction = @import("../direction.zig").Direction;
 const GridCell = @import("../GridCell.zig").GridCell;
 const Vec2 = @import("../Vec2.zig").Vec2;
 const Rect = @import("../rect.zig").Rect;
+const entt = @import("entt");

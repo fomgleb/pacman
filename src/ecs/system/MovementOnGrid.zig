@@ -14,9 +14,10 @@ pub fn update(self: *const @This()) void {
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const movable_on_grid = view.getConst(component.MovableOnGrid, entity);
+        const movable_on_grid = view.get(component.MovableOnGrid, entity);
         const grid_cell_position = view.get(component.GridCellPosition, entity);
 
+        movable_on_grid.current_speed = movable_on_grid.requested_speed;
         grid_cell_position.previous = grid_cell_position.current;
 
         const delta_time_f32_s = @as(f32, @floatFromInt(delta_time)) / time.ns_per_s;

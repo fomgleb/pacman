@@ -25,7 +25,7 @@ pub fn main() !void {
     const events_holder_entity = reg.create();
     const grid_entity = ecs.entity.Grid.init(&reg);
 
-    var pacman = try ecs.entity.Pacman.init(&reg, sdl_renderer);
+    var pacman = try ecs.entity.Pacman.init(&reg, sdl_renderer, grid_entity);
     defer pacman.deinit();
 
     const level_loader = try ecs.system.init.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid_entity);
@@ -38,6 +38,7 @@ pub fn main() !void {
 
         (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
+        (ecs.system.CollidingOnGrid{.reg = &reg}).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity }).system(),
