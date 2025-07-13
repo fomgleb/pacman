@@ -7,6 +7,7 @@ pub const DeltaTimeCounter = @import("system/DeltaTimeCounter.zig");
 pub const FpsLimiter = @import("system/FpsLimiter.zig");
 pub const LevelRenderer = @import("system/LevelRenderer.zig");
 pub const MovementOnGrid = @import("system/MovementOnGrid.zig");
+pub const PelletsEating = @import("system/PelletsEating.zig");
 pub const PlacerInWindowCenter = @import("system/PlacerInWindowCenter.zig");
 pub const PlayerInitializer = @import("system/PlayerInitializer.zig");
 pub const PlayerInputHandler = @import("system/PlayerInputHandler.zig");

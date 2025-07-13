@@ -44,6 +44,7 @@ pub fn main() !void {
         (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
+        (ecs.system.PelletsEating{ .reg = &reg }).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
