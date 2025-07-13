@@ -8,6 +8,7 @@ pub const FpsLimiter = @import("system/FpsLimiter.zig");
 pub const GridWallsRenderer = @import("system/GridWallsRenderer.zig");
 pub const MovementOnGrid = @import("system/MovementOnGrid.zig");
 pub const PlacerInWindowCenter = @import("system/PlacerInWindowCenter.zig");
+pub const PlayerInitializer = @import("system/PlayerInitializer.zig");
 pub const PlayerInputHandler = @import("system/PlayerInputHandler.zig");
 pub const RenderPresent = @import("system/RenderPresent.zig");
 pub const ScalerToGrid = @import("system/ScalerToGrid.zig");
