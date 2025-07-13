@@ -5,21 +5,22 @@ const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
-grid: entt.Entity,
 
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.GridCellPosition,
         component.RenderArea,
+        component.GridMembership,
     }, .{});
     var iter = view.entityIterator();
-
-    const grid_size_f32 = self.reg.getConst(component.GridSize, self.grid).floatFromInt(f32);
-    const grid_render_area_f32 = self.reg.getConst(component.RenderArea, self.grid).floatFromInt(f32);
 
     while (iter.next()) |entity| {
         const grid_cell_position = view.getConst(component.GridCellPosition, entity);
         const render_area = view.get(component.RenderArea, entity);
+
+        const grid = view.getConst(component.GridMembership, entity).grid_entity;
+        const grid_size_f32 = self.reg.getConst(component.GridSize, grid).floatFromInt(f32);
+        const grid_render_area_f32 = self.reg.getConst(component.RenderArea, grid).floatFromInt(f32);
 
         const cell_size = Vec2(f32){
             .x = grid_render_area_f32.size.x / grid_size_f32.x,

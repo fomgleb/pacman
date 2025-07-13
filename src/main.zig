@@ -42,7 +42,7 @@ pub fn main() !void {
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
-        (ecs.system.ScalerToGrid{ .reg = &reg, .grid = grid_entity }).system(),
+        (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
