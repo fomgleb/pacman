@@ -8,6 +8,7 @@ const entt = @import("entt");
 
 reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
+pellet_texture: *c.SDL_Texture,
 
 pub fn update(self: *const @This()) !void {
     var view = self.reg.view(.{
@@ -25,14 +26,18 @@ pub fn update(self: *const @This()) !void {
         try sdl.setRenderDrawColor(self.renderer, 0, 0, 0, 255);
         for (0..grid_cells.size.x) |x| {
             for (0..grid_cells.size.y) |y| {
-                if (grid_cells.get(.{ .x = x, .y = y }) != .wall) continue;
-
                 const x_f32: f32 = @floatFromInt(x);
                 const y_f32: f32 = @floatFromInt(y);
-                try sdl.renderFillRect(self.renderer, Rect(f32){
+                const dst_render_area = Rect(f32){
                     .position = .{ .x = render_area_f32.position.x + x_f32 * cell_width, .y = render_area_f32.position.y + y_f32 * cell_height },
                     .size = .{ .x = cell_width, .y = cell_height },
-                });
+                };
+                switch (grid_cells.get(.{ .x = x, .y = y })) {
+                    .wall => try sdl.renderFillRect(self.renderer, dst_render_area),
+                    .pacman_spawn => {},
+                    .pellet => try sdl.renderTexture(self.renderer, self.pellet_texture, null, dst_render_area),
+                    .empty => {},
+                }
             }
         }
     }

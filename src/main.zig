@@ -20,6 +20,10 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
+    const pellet_texture = try sdl.loadTexture(sdl_renderer, "resources/pellet.png");
+    try sdl.setTextureScaleMode(pellet_texture, .nearest);
+    defer c.SDL_DestroyTexture(pellet_texture);
+
     const fps_entity = try ecs.entity.Fps.init(&reg);
     const delta_time_entity = try ecs.entity.DeltaTime.init(&reg);
     const events_holder_entity = reg.create();
@@ -46,7 +50,7 @@ pub fn main() !void {
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
-        (ecs.system.GridWallsRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
+        (ecs.system.LevelRenderer{ .reg = &reg, .renderer = sdl_renderer, .pellet_texture = pellet_texture }).system(),
         (ecs.system.TextureRenderer{ .reg = &reg }).system(),
         (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
 

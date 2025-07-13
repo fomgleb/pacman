@@ -30,6 +30,7 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
             const new_grid_cell: GridCell = switch (character) {
                 '#' => .wall,
                 'P' => .pacman_spawn,
+                '.' => .pellet,
                 ' ' => .empty,
                 else => {
                     log.err("Failed to parse `{}` in {s}: Illegal symbol (row: {}; col: {})", .{ character, level_file_path, row_idx + 1, column_idx + 1 });
