@@ -5,10 +5,10 @@ pub fn init(reg: *entt.Registry) entt.Entity {
     const entity = reg.create();
 
     reg.add(entity, component.CenteredInWindowTag{});
-    reg.add(entity, component.AspectRatio{ .h = undefined, .w = undefined });
-    reg.add(entity, component.GridSize{ .x = undefined, .y = undefined });
-    reg.add(entity, component.GridCells{ .mem = undefined, .size = undefined, .allocator = undefined });
-    reg.add(entity, component.RenderArea{ .position = undefined, .size = undefined });
+    reg.add(entity, @as(component.AspectRatio, undefined));
+    reg.add(entity, @as(component.GridSize, undefined));
+    reg.add(entity, @as(component.GridCells, undefined));
+    reg.add(entity, @as(component.RenderArea, undefined));
 
     return entity;
 }
