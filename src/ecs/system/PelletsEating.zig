@@ -5,12 +5,14 @@ const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
+events_holder: entt.Entity,
 
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.PlayerTag,
         component.GridMembership,
         component.GridCellPosition,
+        component.PelletsEater,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -18,9 +20,15 @@ pub fn update(self: *const @This()) void {
         const grid_cells = self.reg.get(component.GridCells, grid);
         const entity_cell_pos_f32 = self.reg.getConst(component.GridCellPosition, entity).current;
         const entity_cell_pos = roundVec2f32(entity_cell_pos_f32);
+        const pellets_eater = self.reg.get(component.PelletsEater, entity);
 
         if (grid_cells.get(entity_cell_pos) == .pellet) {
             grid_cells.set(entity_cell_pos, .empty);
+            pellets_eater.eaten_pellets_count += 1;
+            pellets_eater.left_pellets_count -= 1;
+            if (pellets_eater.left_pellets_count == 0) {
+                self.reg.addOrReplace(self.events_holder, component.QuitEvent{});
+            }
         }
     }
 }

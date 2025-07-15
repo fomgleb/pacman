@@ -30,7 +30,7 @@ pub fn main() !void {
     const grid_entity = ecs.entity.Grid.init(&reg);
     const pacman = ecs.entity.Pacman.init(&reg);
 
-    const level_loader = try ecs.system.init.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid_entity);
+    const level_loader = try ecs.system.init.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid_entity, pacman);
     defer level_loader.deinit();
 
     const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid_entity);
@@ -44,7 +44,7 @@ pub fn main() !void {
         (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
-        (ecs.system.PelletsEating{ .reg = &reg }).system(),
+        (ecs.system.PelletsEating{ .reg = &reg, .events_holder = events_holder_entity }).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),

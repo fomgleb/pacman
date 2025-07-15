@@ -11,6 +11,7 @@ pub const DeltaTimeMeasuredEvent = struct { value: u64 };
 pub const QuitEvent = void;
 pub const Timer = std.time.Timer;
 pub const GridMembership = struct { grid_entity: entt.Entity };
+pub const PelletsEater = struct { left_pellets_count: u32, eaten_pellets_count: u32 };
 pub const AspectRatio = @import("component/AspectRatio.zig");
 pub const MovableOnGrid = @import("component/MovableOnGrid.zig");
 

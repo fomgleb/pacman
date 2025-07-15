@@ -10,7 +10,7 @@ grid_members: component.GridCells,
 
 const max_level_file_size = 1_000_000_000;
 
-pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const u8, grid_entity: entt.Entity) !@This() {
+pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const u8, grid_entity: entt.Entity, pacman: entt.Entity) !@This() {
     const level_file = try std.fs.cwd().readFileAlloc(allocator, level_file_path, max_level_file_size);
     const level_size = try getLevelDimensions(level_file);
 
@@ -24,13 +24,17 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
     grid_cells.* = try component.GridCells.init(allocator, level_size.as(usize));
 
     var row_iterator = std.mem.splitScalar(u8, level_file, '\n');
+    var pellets_count: u32 = 0;
     var row_idx: usize = 0;
     while (row_iterator.next()) |row| : (row_idx += 1) {
         for (row, 0..) |character, column_idx| {
             const new_grid_cell: GridCell = switch (character) {
                 '#' => .wall,
                 'P' => .pacman_spawn,
-                '.' => .pellet,
+                '.' => blk: {
+                    pellets_count += 1;
+                    break :blk .pellet;
+                },
                 ' ' => .empty,
                 else => {
                     log.err("Failed to parse `{}` in {s}: Illegal symbol (row: {}; col: {})", .{ character, level_file_path, row_idx + 1, column_idx + 1 });
@@ -40,6 +44,10 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
             grid_cells.set(.{ .x = column_idx, .y = row_idx }, new_grid_cell);
         }
     }
+
+    const pellets_eater = reg.get(component.PelletsEater, pacman);
+    pellets_eater.left_pellets_count = pellets_count;
+    pellets_eater.eaten_pellets_count = 0;
 
     return .{ .grid_members = grid_cells.* };
 }

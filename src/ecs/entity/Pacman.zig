@@ -10,6 +10,7 @@ pub fn init(reg: *entt.Registry) entt.Entity {
     reg.add(pacman, @as(component.GridCellPosition, undefined));
     reg.add(pacman, @as(component.MovableOnGrid, undefined));
     reg.add(pacman, @as(component.GridMembership, undefined));
+    reg.add(pacman, @as(component.PelletsEater, undefined));
 
     return pacman;
 }
