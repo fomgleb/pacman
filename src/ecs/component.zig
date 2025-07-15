@@ -1,4 +1,4 @@
-pub const RenderArea = Rect(u32);
+pub const RenderArea = Rect(f32);
 pub const Texture = *c.SDL_Texture;
 pub const GridCellPosition = struct { current: Vec2(f32), previous: Vec2(f32) };
 pub const GridSize = Vec2(u16);

@@ -19,7 +19,7 @@ pub fn update(self: *const @This()) !void {
         const renderable_texture = view.getConst(component.Texture, entity);
 
         const renderer = try sdl.getRendererFromTexture(renderable_texture);
-        try sdl.renderTexture(renderer, renderable_texture, null, render_area.floatFromInt(f32));
+        try sdl.renderTexture(renderer, renderable_texture, null, render_area);
     }
 }
 

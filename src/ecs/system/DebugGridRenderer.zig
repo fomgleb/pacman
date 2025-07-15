@@ -13,7 +13,7 @@ pub fn update(self: *const @This()) error{SdlError}!void {
     while (iter.next()) |entity| {
         const render_area = view.getConst(component.RenderArea, entity);
         try sdl.setRenderDrawColor(self.renderer, 50, 214, 24, 255);
-        try sdl.renderFillRect(self.renderer, render_area.floatFromInt(f32));
+        try sdl.renderFillRect(self.renderer, render_area);
     }
 }
 

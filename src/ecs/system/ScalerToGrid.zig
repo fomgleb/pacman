@@ -20,19 +20,13 @@ pub fn update(self: *const @This()) void {
 
         const grid = view.getConst(component.GridMembership, entity).grid_entity;
         const grid_size_f32 = self.reg.getConst(component.GridSize, grid).floatFromInt(f32);
-        const grid_render_area_f32 = self.reg.getConst(component.RenderArea, grid).floatFromInt(f32);
+        const grid_render_area = self.reg.getConst(component.RenderArea, grid);
 
-        const cell_size = Vec2(f32){
-            .x = grid_render_area_f32.size.x / grid_size_f32.x,
-            .y = grid_render_area_f32.size.y / grid_size_f32.y,
-        };
+        const cell_size = grid_render_area.size.div(grid_size_f32);
 
-        render_area.* = Rect(u32){
-            .position = .{
-                .x = @intFromFloat(grid_render_area_f32.position.x + cell_size.x * grid_cell_position.current.x),
-                .y = @intFromFloat(grid_render_area_f32.position.y + cell_size.y * grid_cell_position.current.y),
-            },
-            .size = cell_size.intFromFloat(u32),
+        render_area.* = Rect(f32){
+            .position = cell_size.mul(grid_cell_position.current).add(grid_render_area.position),
+            .size = cell_size,
         };
     }
 }

@@ -11,26 +11,21 @@ renderer: *c.SDL_Renderer,
 pellet_texture: *c.SDL_Texture,
 
 pub fn update(self: *const @This()) !void {
-    var view = self.reg.view(.{
-        component.GridCells,
-        component.RenderArea,
-    }, .{});
+    var view = self.reg.view(.{ component.GridCells, component.RenderArea }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const grid_cells = view.getConst(component.GridCells, entity);
-        const render_area_f32 = view.getConst(component.RenderArea, entity).floatFromInt(f32);
+        const render_area = view.getConst(component.RenderArea, entity);
 
-        const cell_width = render_area_f32.size.x / @as(f32, @floatFromInt(grid_cells.size.x));
-        const cell_height = render_area_f32.size.y / @as(f32, @floatFromInt(grid_cells.size.y));
+        const cell_size = render_area.size.div(grid_cells.size.floatFromInt(f32));
 
         try sdl.setRenderDrawColor(self.renderer, 0, 0, 0, 255);
         for (0..grid_cells.size.x) |x| {
             for (0..grid_cells.size.y) |y| {
-                const x_f32: f32 = @floatFromInt(x);
-                const y_f32: f32 = @floatFromInt(y);
+                const curr_cell_pos_f32 = Vec2(usize).init(x, y).floatFromInt(f32);
                 const dst_render_area = Rect(f32){
-                    .position = .{ .x = render_area_f32.position.x + x_f32 * cell_width, .y = render_area_f32.position.y + y_f32 * cell_height },
-                    .size = .{ .x = cell_width, .y = cell_height },
+                    .position = cell_size.mul(curr_cell_pos_f32).add(render_area.position),
+                    .size = cell_size,
                 };
                 switch (grid_cells.get(.{ .x = x, .y = y })) {
                     .wall => try sdl.renderFillRect(self.renderer, dst_render_area),

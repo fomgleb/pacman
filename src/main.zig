@@ -47,7 +47,6 @@ pub fn main() !void {
         (ecs.system.PelletsEating{ .reg = &reg }).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
-        (ecs.system.GridRenderAreaAligner{ .reg = &reg, .events_holder = events_holder_entity }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),

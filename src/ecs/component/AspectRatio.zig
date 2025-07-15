@@ -1,20 +1,16 @@
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const AspectRatio = @This();
 
-w: u16,
-h: u16,
+value: Vec2(u16),
 
 pub fn init(raw_aspect_ratio: Vec2(u16)) AspectRatio {
     const simplified_aspect_ratio = simplifyAspectRatio(raw_aspect_ratio);
-    return AspectRatio{
-        .w = simplified_aspect_ratio.x,
-        .h = simplified_aspect_ratio.y,
-    };
+    return AspectRatio{ .value = simplified_aspect_ratio };
 }
 
 fn simplifyAspectRatio(ratio: Vec2(u16)) Vec2(u16) {
     const divisor = gcd(ratio.x, ratio.y);
-    return Vec2(u16){ .x = ratio.x / divisor, .y = ratio.y / divisor };
+    return ratio.divNum(divisor);
 }
 
 // Helper to simplify a fraction (aspect ratio)

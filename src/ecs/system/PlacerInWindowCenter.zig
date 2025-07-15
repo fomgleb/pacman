@@ -20,31 +20,15 @@ pub fn update(self: *const @This()) void {
         const aspect_ratio = view.getConst(component.AspectRatio, entity);
         const render_area = view.get(component.RenderArea, entity);
 
-        render_area.* = computeScreenArea(.{ .x = aspect_ratio.w, .y = aspect_ratio.h }, new_window_size);
+        const new_window_size_f32 = new_window_size.floatFromInt(f32);
+
+        const scale = new_window_size_f32.div(aspect_ratio.value.floatFromInt(f32)).min();
+        const area_size = aspect_ratio.value.floatFromInt(f32).mulNum(scale);
+        const area_pos = new_window_size_f32.sub(area_size).divNum(2);
+        render_area.* = .{ .position = area_pos, .size = area_size };
     }
 }
 
 pub fn system(self: *const @This()) System {
     return System.init(self);
-}
-
-fn computeScreenArea(aspect_ratio: Vec2(u16), window_size: Vec2(u32)) Rect(u32) {
-    const scale_x = window_size.x / aspect_ratio.x;
-    const scale_y = window_size.y / aspect_ratio.y;
-    const scale_ = @min(scale_x, scale_y);
-
-    const size = Vec2(u32){
-        .x = aspect_ratio.x * scale_,
-        .y = aspect_ratio.y * scale_,
-    };
-
-    const position = Vec2(u32){
-        .x = (window_size.x - size.x) / 2,
-        .y = (window_size.y - size.y) / 2,
-    };
-
-    return Rect(u32){
-        .position = position,
-        .size = size,
-    };
 }

@@ -5,7 +5,6 @@ pub const CollidingOnGrid = @import("system/CollidingOnGrid.zig");
 pub const DebugGridRenderer = @import("system/DebugGridRenderer.zig");
 pub const DeltaTimeCounter = @import("system/DeltaTimeCounter.zig");
 pub const FpsLimiter = @import("system/FpsLimiter.zig");
-pub const GridRenderAreaAligner = @import("system/GridRenderAreaAligner.zig");
 pub const LevelRenderer = @import("system/LevelRenderer.zig");
 pub const MovementOnGrid = @import("system/MovementOnGrid.zig");
 pub const PelletsEating = @import("system/PelletsEating.zig");
