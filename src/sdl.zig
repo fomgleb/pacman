@@ -81,6 +81,33 @@ pub fn renderTexture(
     }
 }
 
+pub fn renderTextureRotated(
+    renderer: *c.SDL_Renderer,
+    texture: *c.SDL_Texture,
+    srcrect: ?Rect(f32),
+    dstrect: ?Rect(f32),
+    angle: f64,
+    center: ?Vec2(f32),
+    flip: enum { none, horizontal, vertical },
+) !void {
+    if (!c.SDL_RenderTextureRotated(
+        renderer,
+        texture,
+        if (srcrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+        if (dstrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+        angle,
+        if (center) |c_vec| &c.SDL_FPoint{ .x = c_vec.x, .y = c_vec.y } else null,
+        switch (flip) {
+            .none => c.SDL_FLIP_NONE,
+            .horizontal => c.SDL_FLIP_HORIZONTAL,
+            .vertical => c.SDL_FLIP_VERTICAL,
+        },
+    )) {
+        log.err("Failed to SDL_RenderTexture: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+}
+
 pub fn loadTexture(renderer: *c.SDL_Renderer, file: [*:0]const u8) error{SdlError}!*c.SDL_Texture {
     return c.IMG_LoadTexture(renderer, file) orelse {
         log.err("Failed to IMG_LoadTexture: {s}", .{c.SDL_GetError()});
@@ -97,4 +124,14 @@ pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: enum { nearest, 
         log.err("Failed to SDL_SetTextureScaleMode: {s}", .{c.SDL_GetError()});
         return error.SdlError;
     }
+}
+
+pub fn getTextureSize(texture: *c.SDL_Texture) !Vec2(f32) {
+    var width: f32 = 0;
+    var height: f32 = 0;
+    if (!c.SDL_GetTextureSize(texture, &width, &height)) {
+        log.err("Failed to SDL_SetTextureScaleMode: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+    return Vec2(f32).init(width, height);
 }

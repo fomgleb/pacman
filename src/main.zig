@@ -48,10 +48,12 @@ pub fn main() !void {
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder_entity = events_holder_entity }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
+        (ecs.system.MovementAnimator{ .reg = &reg, .renderer = sdl_renderer, .events_holder = events_holder_entity }).system(),
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.LevelRenderer{ .reg = &reg, .renderer = sdl_renderer, .pellet_texture = pellet_texture }).system(),
+        (ecs.system.MovementAnimationRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.TextureRenderer{ .reg = &reg }).system(),
         (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
 
