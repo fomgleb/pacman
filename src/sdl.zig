@@ -1,7 +1,7 @@
 const c = @import("c.zig");
 const log = @import("std").log.scoped(.sdl);
 const Vec2 = @import("Vec2.zig").Vec2;
-const Rect = @import("rect.zig").Rect;
+const Rect = @import("Rect.zig").Rect;
 
 pub fn initSubSystem(flags: c.SDL_InitFlags) error{SdlError}!void {
     if (!c.SDL_InitSubSystem(flags)) {

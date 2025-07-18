@@ -28,5 +28,5 @@ const c = @import("../c.zig");
 const Direction = @import("../direction.zig").Direction;
 const GridCell = @import("../GridCell.zig").GridCell;
 const Vec2 = @import("../Vec2.zig").Vec2;
-const Rect = @import("../rect.zig").Rect;
+const Rect = @import("../Rect.zig").Rect;
 const entt = @import("entt");
