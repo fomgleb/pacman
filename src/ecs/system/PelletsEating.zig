@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const Direction = @import("../../direction.zig").Direction;
+const Direction = @import("../../Direction.zig").Direction;
 const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
