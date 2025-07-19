@@ -4,14 +4,11 @@ const System = @import("../../System.zig");
 const entt = @import("entt");
 
 reg: *entt.Registry,
-events_holder_entity: entt.Entity,
+events_holder: entt.Entity,
 
 pub fn update(self: *const @This()) void {
-    const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder_entity).value;
-    var view = self.reg.view(.{
-        component.MovableOnGrid,
-        component.GridCellPosition,
-    }, .{});
+    const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder).value;
+    var view = self.reg.view(.{ component.MovableOnGrid, component.GridCellPosition }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);

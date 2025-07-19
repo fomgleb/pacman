@@ -1,9 +1,9 @@
 const std = @import("std");
 const log = std.log.scoped(.@"Level Loader");
-const Vec2 = @import("../../../Vec2.zig").Vec2;
-const GridCell = @import("../../../GridCell.zig").GridCell;
 const Allocator = std.mem.Allocator;
-const component = @import("../../component.zig");
+const component = @import("../component.zig");
+const GridCell = @import("../../GridCell.zig").GridCell;
+const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 grid_members: component.GridCells,

@@ -20,10 +20,9 @@ pub fn update(self: *const @This()) error{SdlError}!void {
         const render_area = view.getConst(component.RenderArea, entity);
         const movable_on_grid = view.getConst(component.MovableOnGrid, entity);
         const movement_animation = view.getConst(component.MovementAnimation, entity);
-        const curr_frame_idx = &movement_animation.current_frame_index;
 
         const src_area = Rect(f32){
-            .position = .{ .x = @round(curr_frame_idx.*) * movement_animation.sprite_size.x, .y = 0 },
+            .position = .{ .x = @round(movement_animation.current_frame_index) * movement_animation.sprite_size.x, .y = 0 },
             .size = movement_animation.sprite_size,
         };
 

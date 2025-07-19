@@ -9,10 +9,7 @@ const entt = @import("entt");
 reg: *entt.Registry,
 
 pub fn update(self: *const @This()) !void {
-    var view = self.reg.view(.{
-        component.RenderArea,
-        component.Texture,
-    }, .{});
+    var view = self.reg.view(.{ component.RenderArea, component.Texture }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const render_area = view.getConst(component.RenderArea, entity);

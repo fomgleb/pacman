@@ -5,10 +5,10 @@ const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 reg: *entt.Registry,
-events_holder_entity: entt.Entity,
+events_holder: entt.Entity,
 
 pub fn update(self: *const @This()) void {
-    const new_window_size = (self.reg.tryGetConst(component.WindowSizeChangedEvent, self.events_holder_entity) orelse return).new_value;
+    const new_window_size = (self.reg.tryGetConst(component.WindowSizeChangedEvent, self.events_holder) orelse return).new_value;
 
     var view = self.reg.view(.{
         component.CenteredInWindowTag,
