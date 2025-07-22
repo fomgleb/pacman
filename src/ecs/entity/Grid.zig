@@ -6,7 +6,6 @@ pub fn init(reg: *entt.Registry) entt.Entity {
 
     reg.add(entity, component.CenteredInWindowTag{});
     reg.add(entity, @as(component.AspectRatio, undefined));
-    reg.add(entity, @as(component.GridSize, undefined));
     reg.add(entity, @as(component.GridCells, undefined));
     reg.add(entity, @as(component.RenderArea, undefined));
 

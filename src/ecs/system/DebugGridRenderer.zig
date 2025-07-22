@@ -8,7 +8,7 @@ reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
 
 pub fn update(self: *const @This()) error{SdlError}!void {
-    var view = self.reg.view(.{ component.GridSize, component.RenderArea }, .{});
+    var view = self.reg.view(.{ component.GridCells, component.RenderArea }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const render_area = view.getConst(component.RenderArea, entity);

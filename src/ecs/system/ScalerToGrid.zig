@@ -19,7 +19,7 @@ pub fn update(self: *const @This()) void {
         const render_area = view.get(component.RenderArea, entity);
 
         const grid = view.getConst(component.GridMembership, entity).grid_entity;
-        const grid_size_f32 = self.reg.getConst(component.GridSize, grid).floatFromInt(f32);
+        const grid_size_f32 = self.reg.getConst(component.GridCells, grid).size.floatFromInt(f32);
         const grid_render_area = self.reg.getConst(component.RenderArea, grid);
 
         const cell_size = grid_render_area.size.div(grid_size_f32);

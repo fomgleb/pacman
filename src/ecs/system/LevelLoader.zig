@@ -17,9 +17,6 @@ pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const 
     const aspect_ratio = reg.get(component.AspectRatio, grid_entity);
     aspect_ratio.* = component.AspectRatio.init(level_size);
 
-    const grid_size = reg.get(component.GridSize, grid_entity);
-    grid_size.* = component.GridSize{ .x = level_size.x, .y = level_size.y };
-
     const grid_cells = reg.get(component.GridCells, grid_entity);
     grid_cells.* = try component.GridCells.init(allocator, level_size.as(usize));
 

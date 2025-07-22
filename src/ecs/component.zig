@@ -1,6 +1,5 @@
 pub const RenderArea = Rect(f32);
 pub const Texture = *c.SDL_Texture;
-pub const GridSize = Vec2(u16); // TODO: Remove the component
 pub const GridCells = Array2D(GridCell);
 pub const PlayerTag = void;
 pub const EnemyTag = void;
