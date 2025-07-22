@@ -126,7 +126,7 @@ pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: enum { nearest, 
     }
 }
 
-pub fn getTextureSize(texture: *c.SDL_Texture) !Vec2(f32) {
+pub fn getTextureSize(texture: *c.SDL_Texture) error{SdlError}!Vec2(f32) {
     var width: f32 = 0;
     var height: f32 = 0;
     if (!c.SDL_GetTextureSize(texture, &width, &height)) {

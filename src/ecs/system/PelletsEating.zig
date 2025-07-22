@@ -7,6 +7,7 @@ const entt = @import("entt");
 reg: *entt.Registry,
 events_holder: entt.Entity,
 
+// TODO: Pellets are disappearing too early
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.PlayerTag,
@@ -19,7 +20,7 @@ pub fn update(self: *const @This()) void {
         const grid = self.reg.getConst(component.GridMembership, entity).grid_entity;
         const grid_cells = self.reg.get(component.GridCells, grid);
         const entity_cell_pos_f32 = self.reg.getConst(component.GridCellPosition, entity).current;
-        const entity_cell_pos = roundVec2f32(entity_cell_pos_f32);
+        const entity_cell_pos = entity_cell_pos_f32.round().intFromFloat(usize);
         const pellets_eater = self.reg.get(component.PelletsEater, entity);
 
         if (grid_cells.get(entity_cell_pos) == .pellet) {
@@ -35,8 +36,4 @@ pub fn update(self: *const @This()) void {
 
 pub fn system(self: *const @This()) System {
     return System.init(self);
-}
-
-pub fn roundVec2f32(vec: Vec2(f32)) Vec2(usize) {
-    return .{ .x = @intFromFloat(@round(vec.x)), .y = @intFromFloat(@round(vec.y)) };
 }

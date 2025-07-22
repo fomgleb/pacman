@@ -8,6 +8,7 @@ const entt = @import("entt");
 
 const window_title = "Pacman";
 const initial_window_size = Vec2(u32){ .x = 600, .y = 400 };
+const enemy_spawn_delay_s = 5;
 
 pub fn main() !void {
     try sdl.initSubSystem(c.SDL_INIT_VIDEO);
@@ -29,6 +30,7 @@ pub fn main() !void {
     const events_holder = reg.create();
     const grid = ecs.entity.Grid.init(&reg);
     const pacman = ecs.entity.Pacman.init(&reg);
+    _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy_spawn_delay_s), grid);
 
     const level_loader = try ecs.system.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid, pacman);
     defer level_loader.deinit();
@@ -36,11 +38,16 @@ pub fn main() !void {
     const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid);
     defer player_initializer.deinit();
 
+    const fast_stupid_enemy_creator = try ecs.entity.FastStupidEnemyCreator.init(sdl_renderer);
+    defer fast_stupid_enemy_creator.deinit();
+
     const systems = [_]System{
         (ecs.system.SdlEventsHandler{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.DeltaTimeCounter{ .reg = &reg, .events_holder = events_holder, .delta_time = delta_time }).system(),
         (ecs.system.PlayerInputHandler{ .reg = &reg, .events_holder = events_holder, .pacman = pacman }).system(),
 
+        ecs.system.EnemySpawning.init(&reg, sdl_renderer, pacman, fast_stupid_enemy_creator).system(),
+        (ecs.system.FastStupidEnemyAi{ .reg = &reg }).system(),
         (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
