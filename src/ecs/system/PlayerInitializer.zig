@@ -19,7 +19,7 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.
     const grid_cells = reg.getConst(component.GridCells, grid);
     const pacman_spawn_pos = findPacmanSpawn(grid_cells) orelse return error.NoPacmanSpawn;
     const pacman_spawn_pos_f32 = pacman_spawn_pos.floatFromInt(f32);
-    reg.replace(pacman_entity, component.GridCellPosition{ .current = pacman_spawn_pos_f32, .previous = pacman_spawn_pos_f32 });
+    reg.replace(pacman_entity, component.PositionOnGrid{ .current = pacman_spawn_pos_f32, .previous = pacman_spawn_pos_f32 });
 
     // component.MovableOnGrid
     reg.replace(pacman_entity, component.MovableOnGrid{

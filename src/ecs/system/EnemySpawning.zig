@@ -33,7 +33,7 @@ pub fn update(self: *const @This()) !void {
         if (enemy_spawner.is_spawned or enemy_spawner.timer.read() < enemy_spawner.spawn_delay) continue;
         const grid = view.getConst(component.GridMembership, e).grid_entity;
         const grid_cells = view.getConst(component.GridCells, grid);
-        const pacman_position = self.reg.getConst(component.GridCellPosition, self.pacman);
+        const pacman_position = self.reg.getConst(component.PositionOnGrid, self.pacman);
 
         // TODO: Don't spawn an enemy near the pacman
         _ = pacman_position;

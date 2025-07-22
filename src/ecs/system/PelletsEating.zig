@@ -12,14 +12,14 @@ pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.PlayerTag,
         component.GridMembership,
-        component.GridCellPosition,
+        component.PositionOnGrid,
         component.PelletsEater,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const grid = self.reg.getConst(component.GridMembership, entity).grid_entity;
         const grid_cells = self.reg.get(component.GridCells, grid);
-        const entity_cell_pos_f32 = self.reg.getConst(component.GridCellPosition, entity).current;
+        const entity_cell_pos_f32 = self.reg.getConst(component.PositionOnGrid, entity).current;
         const entity_cell_pos = entity_cell_pos_f32.round().intFromFloat(usize);
         const pellets_eater = self.reg.get(component.PelletsEater, entity);
 

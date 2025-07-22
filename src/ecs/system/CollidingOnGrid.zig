@@ -9,18 +9,18 @@ reg: *entt.Registry,
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.MovableOnGrid,
-        component.GridCellPosition,
+        component.PositionOnGrid,
         component.GridMembership,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
-        const grid_cell_position = view.get(component.GridCellPosition, entity);
+        const position_on_grid = view.get(component.PositionOnGrid, entity);
         const grid_entity = view.getConst(component.GridMembership, entity).grid_entity;
         const grid_cells = self.reg.getConst(component.GridCells, grid_entity);
 
-        const prev_pos_f32 = grid_cell_position.previous;
-        const curr_pos_f32 = grid_cell_position.current;
+        const prev_pos_f32 = position_on_grid.previous;
+        const curr_pos_f32 = position_on_grid.current;
         const curr_direction = movable_on_grid.current_direction;
         switch (curr_direction) {
             .up, .down => {
@@ -30,7 +30,7 @@ pub fn update(self: *const @This()) void {
                 const offset = if (curr_direction == .up) collision_y - curr_pos_f32.y else curr_pos_f32.y - collision_y;
                 if (offset >= 0) {
                     movable_on_grid.current_speed = 0;
-                    grid_cell_position.current.y = collision_y;
+                    position_on_grid.current.y = collision_y;
                 } else {
                     movable_on_grid.current_speed = movable_on_grid.requested_speed;
                 }
@@ -42,7 +42,7 @@ pub fn update(self: *const @This()) void {
                 const offset = if (curr_direction == .left) collision_x - curr_pos_f32.x else curr_pos_f32.x - collision_x;
                 if (offset >= 0) {
                     movable_on_grid.current_speed = 0;
-                    grid_cell_position.current.x = collision_x;
+                    position_on_grid.current.x = collision_x;
                 } else {
                     movable_on_grid.current_speed = movable_on_grid.requested_speed;
                 }

@@ -8,22 +8,22 @@ events_holder: entt.Entity,
 
 pub fn update(self: *const @This()) void {
     const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder).value;
-    var view = self.reg.view(.{ component.MovableOnGrid, component.GridCellPosition }, .{});
+    var view = self.reg.view(.{ component.MovableOnGrid, component.PositionOnGrid }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
-        const grid_cell_position = view.get(component.GridCellPosition, entity);
+        const position_on_grid = view.get(component.PositionOnGrid, entity);
 
         movable_on_grid.current_speed = movable_on_grid.requested_speed;
-        grid_cell_position.previous = grid_cell_position.current;
+        position_on_grid.previous = position_on_grid.current;
 
         const delta_time_f32_s = @as(f32, @floatFromInt(delta_time)) / time.ns_per_s;
         const step = movable_on_grid.current_speed * delta_time_f32_s;
         switch (movable_on_grid.current_direction) {
-            .up => grid_cell_position.current.y -= step,
-            .down => grid_cell_position.current.y += step,
-            .left => grid_cell_position.current.x -= step,
-            .right => grid_cell_position.current.x += step,
+            .up => position_on_grid.current.y -= step,
+            .down => position_on_grid.current.y += step,
+            .left => position_on_grid.current.x -= step,
+            .right => position_on_grid.current.x += step,
         }
     }
 }

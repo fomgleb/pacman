@@ -10,14 +10,14 @@ reg: *entt.Registry,
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
         component.MovableOnGrid,
-        component.GridCellPosition,
+        component.PositionOnGrid,
         component.GridMembership,
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
         if (movable_on_grid.requested_direction == movable_on_grid.current_direction) continue;
-        const grid_cell_position = view.get(component.GridCellPosition, entity);
+        const position_on_grid = view.get(component.PositionOnGrid, entity);
         const grid_entity = view.getConst(component.GridMembership, entity).grid_entity;
         const grid_cells = self.reg.getConst(component.GridCells, grid_entity);
 
@@ -28,8 +28,8 @@ pub fn update(self: *const @This()) void {
 
         const curr_dir = movable_on_grid.current_direction;
         const req_dir = movable_on_grid.requested_direction;
-        const curr_pos_f32 = grid_cell_position.current;
-        const prev_pos_f32 = grid_cell_position.previous;
+        const curr_pos_f32 = position_on_grid.current;
+        const prev_pos_f32 = position_on_grid.previous;
         switch (curr_dir) {
             .up, .down => {
                 if (req_dir != .left and req_dir != .right) continue;
@@ -43,7 +43,7 @@ pub fn update(self: *const @This()) void {
                     .right => curr_pos_f32.x + left,
                     else => unreachable,
                 };
-                grid_cell_position.current = .{ .x = new_x, .y = potential_y };
+                position_on_grid.current = .{ .x = new_x, .y = potential_y };
             },
             .left, .right => {
                 if (req_dir != .up and req_dir != .down) continue;
@@ -57,7 +57,7 @@ pub fn update(self: *const @This()) void {
                     .down => curr_pos_f32.y + left,
                     else => unreachable,
                 };
-                grid_cell_position.current = .{ .x = potential_x, .y = new_y };
+                position_on_grid.current = .{ .x = potential_x, .y = new_y };
             },
         }
 

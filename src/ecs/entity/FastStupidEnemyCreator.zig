@@ -33,7 +33,7 @@ pub fn create(
 
     reg.add(entity, @as(component.EnemyTag, {}));
     reg.add(entity, @as(component.RenderArea, undefined));
-    reg.add(entity, @as(component.GridCellPosition, .init(position_on_grid)));
+    reg.add(entity, @as(component.PositionOnGrid, .init(position_on_grid)));
     reg.add(entity, @as(component.MovableOnGrid, movable_on_grid));
     reg.add(entity, @as(component.GridMembership, .{ .grid_entity = grid }));
     reg.add(entity, @as(component.MovementAnimation, try .init(self.move_sprite_sheet, sprite_width, fps)));

@@ -8,14 +8,14 @@ reg: *entt.Registry,
 
 pub fn update(self: *const @This()) void {
     var view = self.reg.view(.{
-        component.GridCellPosition,
+        component.PositionOnGrid,
         component.RenderArea,
         component.GridMembership,
     }, .{});
     var iter = view.entityIterator();
 
     while (iter.next()) |entity| {
-        const grid_cell_position = view.getConst(component.GridCellPosition, entity);
+        const position_on_grid = view.getConst(component.PositionOnGrid, entity);
         const render_area = view.get(component.RenderArea, entity);
 
         const grid = view.getConst(component.GridMembership, entity).grid_entity;
@@ -25,7 +25,7 @@ pub fn update(self: *const @This()) void {
         const cell_size = grid_render_area.size.div(grid_size_f32);
 
         render_area.* = Rect(f32){
-            .position = cell_size.mul(grid_cell_position.current).add(grid_render_area.position),
+            .position = cell_size.mul(position_on_grid.current).add(grid_render_area.position),
             .size = cell_size,
         };
     }
