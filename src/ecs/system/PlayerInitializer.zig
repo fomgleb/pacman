@@ -10,7 +10,7 @@ const initial_direction = Direction.down;
 const speed = 3.0;
 const sprite_sheet_path = "resources/pacman/pacman-move.png";
 const sprite_size = Vec2(f32){ .x = 17, .y = 17 };
-const frames_per_second = speed * 20.0;
+const frames_per_second = speed * 40.0;
 
 pacman_move_sprite_sheet: *c.SDL_Texture,
 
