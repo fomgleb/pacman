@@ -135,3 +135,10 @@ pub fn getTextureSize(texture: *c.SDL_Texture) error{SdlError}!Vec2(f32) {
     }
     return Vec2(f32).init(width, height);
 }
+
+pub fn hasRectIntersectionFloat(a: Rect(f32), b: Rect(f32)) bool {
+    return c.SDL_HasRectIntersectionFloat(
+        &.{ .x = a.position.x, .y = a.position.y, .w = a.size.x, .h = a.size.y },
+        &.{ .x = b.position.x, .y = b.position.y, .w = b.size.x, .h = b.size.y },
+    );
+}

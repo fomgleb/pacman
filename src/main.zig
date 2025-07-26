@@ -21,6 +21,10 @@ pub fn main() !void {
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
+    var gpa_state = std.heap.DebugAllocator(.{}).init;
+    defer if (gpa_state.deinit() == .leak) @panic("Memory leak detected");
+    const allocator = gpa_state.allocator();
+
     const pellet_texture = try sdl.loadTexture(sdl_renderer, "resources/pellet.png");
     try sdl.setTextureScaleMode(pellet_texture, .nearest);
     defer c.SDL_DestroyTexture(pellet_texture);
@@ -38,7 +42,7 @@ pub fn main() !void {
     const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid);
     defer player_initializer.deinit();
 
-    const fast_stupid_enemy_creator = try ecs.entity.FastStupidEnemyCreator.init(sdl_renderer);
+    var fast_stupid_enemy_creator = try ecs.entity.FastStupidEnemyCreator.init(sdl_renderer, allocator, pacman);
     defer fast_stupid_enemy_creator.deinit();
 
     const systems = [_]System{
@@ -52,6 +56,8 @@ pub fn main() !void {
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
         (ecs.system.PelletsEating{ .reg = &reg, .events_holder = events_holder }).system(),
+        (ecs.system.Killing{.reg = &reg}).system(),
+        (ecs.system.GameOver{.reg = &reg, .events_holder = events_holder}).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
