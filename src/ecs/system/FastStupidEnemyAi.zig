@@ -14,12 +14,12 @@ pub fn update(self: *const @This()) void {
     }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const has_fast_stupid_enemy_ai = view.get(component.FastStupidEnemyAi, entity);
-        if (has_fast_stupid_enemy_ai.timer.read() < has_fast_stupid_enemy_ai.change_move_direction_delay) continue;
+        const brain = view.get(component.FastStupidEnemyAi, entity);
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
+        if (movable_on_grid.current_speed != 0 and brain.timer.read() < brain.change_move_direction_delay) continue;
 
         movable_on_grid.requested_direction = std.crypto.random.enumValue(Direction);
-        has_fast_stupid_enemy_ai.timer.reset();
+        brain.timer.reset();
     }
 }
 
