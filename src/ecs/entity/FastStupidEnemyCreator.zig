@@ -5,9 +5,10 @@ const sdl = @import("../../sdl.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-const move_sprite_sheet_path = "resources/pacman/pacman-move.png";
+const move_sprite_sheet_path = "resources/ghost/ghost-move.png";
 const sprite_width = 17;
-const fps = 60;
+const sprite_fps = 30;
+const sprite_can_rotate = false;
 
 move_sprite_sheet: *c.SDL_Texture,
 
@@ -36,7 +37,7 @@ pub fn create(
     reg.add(entity, @as(component.PositionOnGrid, .init(position_on_grid)));
     reg.add(entity, @as(component.MovableOnGrid, movable_on_grid));
     reg.add(entity, @as(component.GridMembership, .{ .grid_entity = grid }));
-    reg.add(entity, @as(component.MovementAnimation, try .init(self.move_sprite_sheet, sprite_width, fps)));
+    reg.add(entity, @as(component.MovementAnimation, try .init(self.move_sprite_sheet, sprite_width, sprite_fps, sprite_can_rotate)));
     reg.add(entity, @as(component.FastStupidEnemyAi, try .init(change_move_direction_delay_s)));
 
     return entity;

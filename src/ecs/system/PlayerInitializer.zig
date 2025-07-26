@@ -9,8 +9,9 @@ const texture_path = "resources/pacman.png";
 const initial_direction = Direction.down;
 const speed = 3.0;
 const sprite_sheet_path = "resources/pacman/pacman-move.png";
-const sprite_size = Vec2(f32){ .x = 17, .y = 17 };
-const frames_per_second = speed * 40.0;
+const sprite_width = 17;
+const sprite_fps = speed * 40.0;
+const sprite_can_rotate = true;
 
 pacman_move_sprite_sheet: *c.SDL_Texture,
 
@@ -33,17 +34,11 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.
     reg.replace(pacman_entity, component.GridMembership{ .grid_entity = grid });
 
     // component.MovementAnimation
-    const pacman_move_sprite_sheet = try sdl.loadTexture(renderer, sprite_sheet_path);
-    try sdl.setTextureScaleMode(pacman_move_sprite_sheet, .nearest);
-    reg.replace(pacman_entity, component.MovementAnimation{
-        .sprite_sheet = pacman_move_sprite_sheet,
-        .sprite_size = sprite_size,
-        .fps = frames_per_second,
-        .current_frame_index = -1,
-        .sprite_sheet_read_direction = .right,
-    });
+    const move_sprite_sheet = try sdl.loadTexture(renderer, sprite_sheet_path);
+    try sdl.setTextureScaleMode(move_sprite_sheet, .nearest);
+    reg.replace(pacman_entity, try component.MovementAnimation.init(move_sprite_sheet, sprite_width, sprite_fps, sprite_can_rotate));
 
-    return .{ .pacman_move_sprite_sheet = pacman_move_sprite_sheet };
+    return .{ .pacman_move_sprite_sheet = move_sprite_sheet };
 }
 
 pub fn deinit(self: @This()) void {

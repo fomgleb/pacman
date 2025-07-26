@@ -26,14 +26,18 @@ pub fn update(self: *const @This()) error{SdlError}!void {
             .size = movement_animation.sprite_size,
         };
 
-        const angle: f64 = switch (movable_on_grid.current_direction) {
-            .up => -90,
-            .down => 90,
-            .left => 180,
-            .right => 0,
-        };
+        if (movement_animation.sprite_can_rotate) {
+            const angle: f64 = switch (movable_on_grid.current_direction) {
+                .up => -90,
+                .down => 90,
+                .left => 180,
+                .right => 0,
+            };
 
-        try sdl.renderTextureRotated(self.renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, .none);
+            try sdl.renderTextureRotated(self.renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, .none);
+        } else {
+            try sdl.renderTexture(self.renderer, movement_animation.sprite_sheet, src_area, render_area);
+        }
     }
 }
 
