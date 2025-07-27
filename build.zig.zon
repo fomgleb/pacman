@@ -9,8 +9,8 @@
             .hash = "sdl-0.2.5+3.2.18-7uIn9FwZfwHKOwSubcg5_CiW4fXag5IIsiV_jnLdkpDM",
         },
         .sdl_image = .{
-            .url = "https://github.com/libsdl-org/SDL_image/archive/refs/tags/release-3.2.4.tar.gz",
-            .hash = "N-V-__8AAJB7IgJ65BPSqjqzt7j-5xKDklR0h8c11T60iemj",
+            .url = "git+https://github.com/allyourcodebase/SDL_image#54a9d8c0e252f96f8c167d41a0ced4ee98093f9b",
+            .hash = "SDL_image-3.2.4--aJoHa0VAABaZkV7FOIgwlUzCfXJ8BOZ4XzITKm8INAV",
         },
         .entt = .{
             .url = "git+https://github.com/prime31/zig-ecs#450e9a322ea9087ffc6d471648a371f50067b55b",

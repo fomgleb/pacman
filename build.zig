@@ -14,11 +14,11 @@ pub fn build(b: *Build) void {
         .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
     };
 
-    const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
     const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o });
-    const sdl_image = createSdlImageLibrary(b, t, o, sdl_dep.artifact("SDL3"));
+    const sdl_image_dep = b.dependency("sdl_image", .{ .target = t, .optimize = o });
+    const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
-    main_module.linkLibrary(sdl_image.artifact);
+    main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
     const main_exe = createMainExecutable(b, main_module);
     addCheckStep(b, main_module);
     addRunStep(b, main_exe);
@@ -65,96 +65,4 @@ fn addTestExeStep(b: *Build, test_module: *Module) *Step.Compile {
 fn addTestStep(b: *Build, test_exe: *Build.Step.Compile) void {
     const run_all_tests = b.addRunArtifact(test_exe);
     b.step("test", "Run unit tests").dependOn(&run_all_tests.step);
-}
-
-fn createSdlImageLibrary(b: *Build, target: ResolvedTarget, optimize: OptimizeMode, sdl: *Step.Compile) *Step.InstallArtifact {
-    const c_sdl_image_dep = b.dependency("sdl_image", .{});
-
-    const lib = b.addLibrary(.{
-        .name = "sdl_image",
-        .version = .{ .major = 3, .minor = 2, .patch = 4 },
-        .linkage = .static,
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-            .link_libc = true,
-        }),
-    });
-    lib.linkLibrary(sdl);
-
-    // Use stb_image for loading JPEG and PNG files. Native alternatives such as
-    // Windows Imaging Component and Apple's Image I/O framework are not yet
-    // supported by this build script.
-    lib.root_module.addCMacro("USE_STBIMAGE", "");
-
-    // The following are options for supported file formats. AVIF, JXL, TIFF,
-    // and WebP are not yet supported by this build script, as they require
-    // additional dependencies.
-    if (b.option(bool, "enable-bmp", "Support loading BMP images") orelse true)
-        lib.root_module.addCMacro("LOAD_BMP", "");
-    if (b.option(bool, "enable-gif", "Support loading GIF images") orelse true)
-        lib.root_module.addCMacro("LOAD_GIF", "");
-    if (b.option(bool, "enable-jpg", "Support loading JPEG images") orelse true)
-        lib.root_module.addCMacro("LOAD_JPG", "");
-    if (b.option(bool, "enable-lbm", "Support loading LBM images") orelse true)
-        lib.root_module.addCMacro("LOAD_LBM", "");
-    if (b.option(bool, "enable-pcx", "Support loading PCX images") orelse true)
-        lib.root_module.addCMacro("LOAD_PCX", "");
-    if (b.option(bool, "enable-png", "Support loading PNG images") orelse true)
-        lib.root_module.addCMacro("LOAD_PNG", "");
-    if (b.option(bool, "enable-pnm", "Support loading PNM images") orelse true)
-        lib.root_module.addCMacro("LOAD_PNM", "");
-    if (b.option(bool, "enable-qoi", "Support loading QOI images") orelse true)
-        lib.root_module.addCMacro("LOAD_QOI", "");
-    if (b.option(bool, "enable-svg", "Support loading SVG images") orelse true)
-        lib.root_module.addCMacro("LOAD_SVG", "");
-    if (b.option(bool, "enable-tga", "Support loading TGA images") orelse true)
-        lib.root_module.addCMacro("LOAD_TGA", "");
-    if (b.option(bool, "enable-xcf", "Support loading XCF images") orelse true)
-        lib.root_module.addCMacro("LOAD_XCF", "");
-    if (b.option(bool, "enable-xpm", "Support loading XPM images") orelse true)
-        lib.root_module.addCMacro("LOAD_XPM", "");
-    if (b.option(bool, "enable-xv", "Support loading XV images") orelse true)
-        lib.root_module.addCMacro("LOAD_XV", "");
-
-    lib.addIncludePath(c_sdl_image_dep.path("include"));
-    lib.addIncludePath(c_sdl_image_dep.path("src"));
-
-    lib.addCSourceFiles(.{
-        .root = c_sdl_image_dep.path("src"),
-        .files = &.{
-            "IMG.c",
-            "IMG_WIC.c",
-            "IMG_avif.c",
-            "IMG_bmp.c",
-            "IMG_gif.c",
-            "IMG_jpg.c",
-            "IMG_jxl.c",
-            "IMG_lbm.c",
-            "IMG_pcx.c",
-            "IMG_png.c",
-            "IMG_pnm.c",
-            "IMG_qoi.c",
-            "IMG_stb.c",
-            "IMG_svg.c",
-            "IMG_tga.c",
-            "IMG_tif.c",
-            "IMG_webp.c",
-            "IMG_xcf.c",
-            "IMG_xpm.c",
-            "IMG_xv.c",
-        },
-    });
-
-    if (target.result.os.tag == .macos) {
-        lib.addCSourceFile(.{
-            .file = c_sdl_image_dep.path("src/IMG_ImageIO.m"),
-        });
-        lib.linkFramework("Foundation");
-        lib.linkFramework("ApplicationServices");
-    }
-
-    lib.installHeadersDirectory(c_sdl_image_dep.path("include"), "", .{});
-
-    return b.addInstallArtifact(lib, .{});
 }
