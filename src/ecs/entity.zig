@@ -4,3 +4,4 @@ pub const Fps = @import("entity/Fps.zig");
 pub const Grid = @import("entity/Grid.zig");
 pub const OneEnemyOnGridSpawner = @import("entity/OneEnemyOnGridSpawner.zig");
 pub const Pacman = @import("entity/Pacman.zig");
+pub const TextCreator = @import("entity/TextCreator.zig");

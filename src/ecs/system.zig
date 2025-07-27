@@ -19,5 +19,7 @@ pub const PlayerInputHandler = @import("system/PlayerInputHandler.zig");
 pub const RenderPresent = @import("system/RenderPresent.zig");
 pub const ScalerToGrid = @import("system/ScalerToGrid.zig");
 pub const SdlEventsHandler = @import("system/SdlEventsHandler.zig");
+pub const TextRendering = @import("system/TextRendering.zig");
 pub const TextureRenderer = @import("system/TextureRenderer.zig");
+pub const TextWithinGrid = @import("system/TextWithinGrid.zig");
 pub const TurningOnGrid = @import("system/TurningOnGrid.zig");

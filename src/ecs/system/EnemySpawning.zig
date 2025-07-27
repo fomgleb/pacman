@@ -9,7 +9,7 @@ const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
 const enemy_move_speed = 5;
-const enemy_change_direction_period = 1;
+const enemy_change_direction_period_s = 1;
 
 reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
@@ -54,7 +54,7 @@ pub fn update(self: *const @This()) !void {
             random_position.floatFromInt(f32),
             .init(enemy_move_speed, random.enumValue(Direction)),
             grid,
-            enemy_change_direction_period,
+            enemy_change_direction_period_s,
         );
 
         enemy_spawner.is_spawned = true;

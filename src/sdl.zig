@@ -1,3 +1,4 @@
+const Color = @import("Color.zig");
 const c = @import("c.zig");
 const log = @import("std").log.scoped(.sdl);
 const Vec2 = @import("Vec2.zig").Vec2;
@@ -144,3 +145,33 @@ pub fn hasRectIntersectionFloat(a: Rect(f32), b: Rect(f32)) bool {
         &.{ .x = b.position.x, .y = b.position.y, .w = b.size.x, .h = b.size.y },
     );
 }
+
+pub fn createTextureFromSurface(renderer: *c.SDL_Renderer, surface: *c.SDL_Surface) error{SdlError}!*c.SDL_Texture {
+    return c.SDL_CreateTextureFromSurface(renderer, surface) orelse {
+        log.err("Failed to SDL_CreateTextureFromSurface: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+pub const ttf = struct {
+    pub fn init() error{SdlError}!void {
+        if (!c.TTF_Init()) {
+            log.err("Failed to TTF_Init: {s}", .{c.SDL_GetError()});
+            return error.SdlError;
+        }
+    }
+
+    pub fn openFont(file: [*:0]const u8, ptsize: f32) error{SdlError}!*c.TTF_Font {
+        return c.TTF_OpenFont(file, ptsize) orelse {
+            log.err("Failed to TTF_OpenFont: {s}", .{c.SDL_GetError()});
+            return error.SdlError;
+        };
+    }
+
+    pub fn renderTextBlended(font: *c.TTF_Font, text: []const u8, fg: Color) error{SdlError}!*c.SDL_Surface {
+        return c.TTF_RenderText_Blended(font, text.ptr, text.len, .{ .r = fg.r, .g = fg.g, .b = fg.b, .a = fg.a }) orelse {
+            log.err("Failed to TTF_RenderText_Blended: {s}", .{c.SDL_GetError()});
+            return error.SdlError;
+        };
+    }
+};

@@ -18,6 +18,9 @@ pub fn main() !void {
     defer c.SDL_DestroyWindow(sdl_window);
     const sdl_renderer = try sdl.createRenderer(sdl_window, null);
     defer c.SDL_DestroyRenderer(sdl_renderer);
+    try sdl.ttf.init();
+    defer c.TTF_Quit();
+
     var reg = entt.Registry.init(std.heap.smp_allocator);
     defer reg.deinit();
 
@@ -49,6 +52,9 @@ pub fn main() !void {
     var fast_stupid_enemy_creator = try ecs.entity.FastStupidEnemyCreator.init(sdl_renderer, allocator, pacman);
     defer fast_stupid_enemy_creator.deinit();
 
+    var game_over_text_creator = try ecs.entity.TextCreator.init(&reg, sdl_renderer, grid, "resources/fonts/yoster.ttf", 60);
+    defer game_over_text_creator.deinit();
+
     const systems = [_]System{
         (ecs.system.SdlEventsHandler{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.DeltaTimeCounter{ .reg = &reg, .events_holder = events_holder, .delta_time = delta_time }).system(),
@@ -61,10 +67,11 @@ pub fn main() !void {
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
         (ecs.system.PelletsEating{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.Killing{ .reg = &reg }).system(),
-        (ecs.system.GameOver{ .reg = &reg, .events_holder = events_holder }).system(),
+        ecs.system.GameOver.init(&reg, events_holder, delta_time, &game_over_text_creator).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
+        (ecs.system.TextWithinGrid{ .reg = &reg }).system(),
         (ecs.system.MovementAnimator{ .reg = &reg, .renderer = sdl_renderer, .events_holder = events_holder }).system(),
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
@@ -72,6 +79,7 @@ pub fn main() !void {
         ecs.system.LevelRenderer.init(&reg, sdl_renderer, wall_texture, pellet_texture).system(),
         (ecs.system.MovementAnimationRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.TextureRenderer{ .reg = &reg }).system(),
+        (ecs.system.TextRendering{ .reg = &reg }).system(),
         (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
 
         ecs.system.FpsLimiter.init(&reg, fps, 60).system(),

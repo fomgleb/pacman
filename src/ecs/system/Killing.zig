@@ -16,13 +16,17 @@ pub fn update(self: *const @This()) void {
         const victims = view.getConst(component.Killer, entity).victims;
         var victims_iterator = victims.iterator();
         while (victims_iterator.next()) |victim| {
+            self.reg.removeIfExists(component.DiedEvent, victim.key_ptr.*);
+            if (self.reg.has(component.DeadTag, victim.key_ptr.*)) continue;
             const victim_position_on_grid = self.reg.getConst(component.PositionOnGrid, victim.key_ptr.*);
             const collided = sdl.hasRectIntersectionFloat(
                 .{ .position = position_on_grid.current, .size = collision_size },
                 .{ .position = victim_position_on_grid.current, .size = collision_size },
             );
-            if (collided)
-                self.reg.addOrReplace(victim.key_ptr.*, component.KilledTag{});
+            if (collided) {
+                self.reg.add(victim.key_ptr.*, component.DeadTag{});
+                self.reg.add(victim.key_ptr.*, component.DiedEvent{});
+            }
         }
     }
 }
