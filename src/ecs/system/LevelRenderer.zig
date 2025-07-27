@@ -8,7 +8,12 @@ const entt = @import("entt");
 
 reg: *entt.Registry,
 renderer: *c.SDL_Renderer,
+wall_texture: *c.SDL_Texture,
 pellet_texture: *c.SDL_Texture,
+
+pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, wall_texture: *c.SDL_Texture, pellet_texture: *c.SDL_Texture) @This() {
+    return .{ .reg = reg, .renderer = renderer, .wall_texture = wall_texture, .pellet_texture = pellet_texture };
+}
 
 pub fn update(self: *const @This()) !void {
     var view = self.reg.view(.{ component.GridCells, component.RenderArea }, .{});
@@ -28,7 +33,7 @@ pub fn update(self: *const @This()) !void {
                     .size = cell_size,
                 };
                 switch (grid_cells.get(.{ .x = x, .y = y })) {
-                    .wall => try sdl.renderFillRect(self.renderer, dst_render_area),
+                    .wall => try sdl.renderTexture(self.renderer, self.wall_texture, null, dst_render_area),
                     .pacman_spawn => {},
                     .pellet => try sdl.renderTexture(self.renderer, self.pellet_texture, null, dst_render_area),
                     .empty => {},

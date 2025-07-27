@@ -29,6 +29,10 @@ pub fn main() !void {
     try sdl.setTextureScaleMode(pellet_texture, .nearest);
     defer c.SDL_DestroyTexture(pellet_texture);
 
+    const wall_texture = try sdl.loadTexture(sdl_renderer, "resources/wall/wall.png");
+    try sdl.setTextureScaleMode(wall_texture, .nearest);
+    defer c.SDL_DestroyTexture(wall_texture);
+
     const fps = try ecs.entity.Fps.init(&reg);
     const delta_time = try ecs.entity.DeltaTime.init(&reg);
     const events_holder = reg.create();
@@ -56,8 +60,8 @@ pub fn main() !void {
         (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
         (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
         (ecs.system.PelletsEating{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.Killing{.reg = &reg}).system(),
-        (ecs.system.GameOver{.reg = &reg, .events_holder = events_holder}).system(),
+        (ecs.system.Killing{ .reg = &reg }).system(),
+        (ecs.system.GameOver{ .reg = &reg, .events_holder = events_holder }).system(),
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
@@ -65,12 +69,12 @@ pub fn main() !void {
 
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
-        (ecs.system.LevelRenderer{ .reg = &reg, .renderer = sdl_renderer, .pellet_texture = pellet_texture }).system(),
+        ecs.system.LevelRenderer.init(&reg, sdl_renderer, wall_texture, pellet_texture).system(),
         (ecs.system.MovementAnimationRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.TextureRenderer{ .reg = &reg }).system(),
         (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
 
-        (ecs.system.FpsLimiter.init(&reg, fps, 60)).system(),
+        ecs.system.FpsLimiter.init(&reg, fps, 60).system(),
     };
 
     while (!reg.has(ecs.component.QuitEvent, events_holder))
