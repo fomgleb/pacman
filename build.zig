@@ -13,12 +13,14 @@ pub fn build(b: *Build) void {
     const imports = &[_]Import{
         .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
     };
-
     const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o });
     const sdl_image_dep = b.dependency("sdl_image", .{ .target = t, .optimize = o });
+    const sdl_ttf_dep = b.dependency("sdl_ttf", .{ .target = t, .optimize = .ReleaseFast });
+
     const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
+    main_module.linkLibrary(sdl_ttf_dep.artifact("SDL3_ttf"));
     const main_exe = createMainExecutable(b, main_module);
     addCheckStep(b, main_module);
     addRunStep(b, main_exe);

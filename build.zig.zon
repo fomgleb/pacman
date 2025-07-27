@@ -12,6 +12,10 @@
             .url = "git+https://github.com/allyourcodebase/SDL_image#54a9d8c0e252f96f8c167d41a0ced4ee98093f9b",
             .hash = "SDL_image-3.2.4--aJoHa0VAABaZkV7FOIgwlUzCfXJ8BOZ4XzITKm8INAV",
         },
+        .sdl_ttf = .{
+            .url = "git+https://github.com/allyourcodebase/SDL_ttf#0e14f7c5a6c4f6c0cc94bdaecd1596d46892521b",
+            .hash = "SDL_ttf-3.2.2-PNW5xLoQAAAKx53Q3-wGyX9NXxT4e1XFkcJFWZs7Q9u7",
+        },
         .entt = .{
             .url = "git+https://github.com/prime31/zig-ecs#450e9a322ea9087ffc6d471648a371f50067b55b",
             .hash = "entt-1.0.0-qJPtbOrVAgCbPkX-YI7ERLt_4ACkKiSDSNQAc-6YlxFr",
