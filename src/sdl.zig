@@ -81,6 +81,8 @@ pub fn renderTexture(
     }
 }
 
+pub const Flip = enum { none, horizontal, vertical };
+
 pub fn renderTextureRotated(
     renderer: *c.SDL_Renderer,
     texture: *c.SDL_Texture,
@@ -88,15 +90,15 @@ pub fn renderTextureRotated(
     dstrect: ?Rect(f32),
     angle: f64,
     center: ?Vec2(f32),
-    flip: enum { none, horizontal, vertical },
+    flip: Flip,
 ) !void {
     if (!c.SDL_RenderTextureRotated(
         renderer,
         texture,
-        if (srcrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
-        if (dstrect) |r| &c.SDL_FRect{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+        if (srcrect) |r| &.{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
+        if (dstrect) |r| &.{ .x = r.position.x, .y = r.position.y, .w = r.size.x, .h = r.size.y } else null,
         angle,
-        if (center) |c_vec| &c.SDL_FPoint{ .x = c_vec.x, .y = c_vec.y } else null,
+        if (center) |c_vec| &.{ .x = c_vec.x, .y = c_vec.y } else null,
         switch (flip) {
             .none => c.SDL_FLIP_NONE,
             .horizontal => c.SDL_FLIP_HORIZONTAL,

@@ -27,14 +27,14 @@ pub fn update(self: *const @This()) error{SdlError}!void {
         };
 
         if (movement_animation.sprite_can_rotate) {
-            const angle: f64 = switch (movable_on_grid.current_direction) {
-                .up => -90,
-                .down => 90,
-                .left => 180,
-                .right => 0,
+            const angle: f64, const flip: sdl.Flip = switch (movable_on_grid.current_direction) {
+                .up => .{ -90, .none },
+                .down => .{ 90, .none },
+                .left => .{ 0, .horizontal },
+                .right => .{ 0, .none },
             };
 
-            try sdl.renderTextureRotated(self.renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, .none);
+            try sdl.renderTextureRotated(self.renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, flip);
         } else {
             try sdl.renderTexture(self.renderer, movement_animation.sprite_sheet, src_area, render_area);
         }
