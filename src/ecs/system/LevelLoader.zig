@@ -12,6 +12,7 @@ const max_level_file_size = 1_000_000_000;
 
 pub fn init(allocator: Allocator, reg: *entt.Registry, level_file_path: []const u8, grid_entity: entt.Entity, pacman: entt.Entity) !@This() {
     const level_file = try std.fs.cwd().readFileAlloc(allocator, level_file_path, max_level_file_size);
+    defer allocator.free(level_file);
     const level_size = try getLevelDimensions(level_file);
 
     const aspect_ratio = reg.get(component.AspectRatio, grid_entity);
