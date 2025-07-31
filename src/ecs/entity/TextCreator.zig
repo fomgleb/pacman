@@ -1,6 +1,7 @@
 const component = @import("../component.zig");
 const Color = @import("../../Color.zig");
 const c = @import("../../c.zig");
+const asset_loader = @import("../../asset_loader.zig");
 const sdl = @import("../../sdl.zig");
 const entt = @import("entt");
 const TextCreator = @This();
@@ -10,12 +11,12 @@ renderer: *c.SDL_Renderer,
 grid: entt.Entity,
 font: *c.TTF_Font,
 
-pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, grid: entt.Entity, file_path: [*:0]const u8, pt_size: f32) !TextCreator {
+pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, grid: entt.Entity, comptime file_path: [:0]const u8, pt_size: f32) !TextCreator {
     return .{
         .reg = reg,
         .renderer = renderer,
         .grid = grid,
-        .font = try sdl.ttf.openFont(file_path, pt_size),
+        .font = try sdl.ttf.openFontIo(try asset_loader.openSdlIoStream(file_path), true, pt_size),
     };
 }
 

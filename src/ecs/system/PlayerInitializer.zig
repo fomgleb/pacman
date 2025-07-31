@@ -1,6 +1,7 @@
 const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Direction = @import("../../Direction.zig").Direction;
+const asset_loader = @import("../../asset_loader.zig");
 const sdl = @import("../../sdl.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
@@ -34,7 +35,7 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.
     reg.replace(pacman_entity, component.GridMembership{ .grid_entity = grid });
 
     // component.MovementAnimation
-    const move_sprite_sheet = try sdl.loadTexture(renderer, sprite_sheet_path);
+    const move_sprite_sheet = try sdl.loadTextureIo(renderer, try asset_loader.openSdlIoStream(sprite_sheet_path), true);
     try sdl.setTextureScaleMode(move_sprite_sheet, .nearest);
     reg.replace(pacman_entity, try component.MovementAnimation.init(move_sprite_sheet, sprite_width, sprite_fps, sprite_can_rotate));
 

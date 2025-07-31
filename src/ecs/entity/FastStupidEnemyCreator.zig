@@ -3,6 +3,7 @@ const Allocator = std.mem.Allocator;
 const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Direction = @import("../../Direction.zig").Direction;
+const asset_loader = @import("../../asset_loader.zig");
 const sdl = @import("../../sdl.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
@@ -17,7 +18,7 @@ victims: std.AutoArrayHashMap(entt.Entity, void),
 move_sprite_sheet: *c.SDL_Texture,
 
 pub fn init(renderer: *c.SDL_Renderer, allocator: Allocator, pacman: entt.Entity) !@This() {
-    const move_sprite_sheet = try sdl.loadTexture(renderer, move_sprite_sheet_path);
+    const move_sprite_sheet = try sdl.loadTextureIo(renderer, try asset_loader.openSdlIoStream(move_sprite_sheet_path), true);
     try sdl.setTextureScaleMode(move_sprite_sheet, .nearest);
 
     var victims = std.AutoArrayHashMap(entt.Entity, void).init(allocator);

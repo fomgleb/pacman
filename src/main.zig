@@ -1,6 +1,7 @@
 const std = @import("std");
 const c = @import("c.zig");
 const ecs = @import("ecs.zig");
+const asset_loader = @import("asset_loader.zig");
 const sdl = @import("sdl.zig");
 const System = @import("System.zig");
 const Vec2 = @import("Vec2.zig").Vec2;
@@ -21,18 +22,18 @@ pub fn main() !void {
     try sdl.ttf.init();
     defer c.TTF_Quit();
 
-    var reg = entt.Registry.init(std.heap.smp_allocator);
-    defer reg.deinit();
-
     var gpa_state = std.heap.DebugAllocator(.{}).init;
     defer if (gpa_state.deinit() == .leak) @panic("Memory leak detected");
     const allocator = gpa_state.allocator();
 
-    const pellet_texture = try sdl.loadTexture(sdl_renderer, "resources/pellet.png");
+    var reg = entt.Registry.init(allocator);
+    defer reg.deinit();
+
+    const pellet_texture = try sdl.loadTextureIo(sdl_renderer, try asset_loader.openSdlIoStream("resources/pellet.png"), true);
     try sdl.setTextureScaleMode(pellet_texture, .nearest);
     defer c.SDL_DestroyTexture(pellet_texture);
 
-    const wall_texture = try sdl.loadTexture(sdl_renderer, "resources/wall/wall.png");
+    const wall_texture = try sdl.loadTextureIo(sdl_renderer, try asset_loader.openSdlIoStream("resources/wall/wall.png"), true);
     try sdl.setTextureScaleMode(wall_texture, .nearest);
     defer c.SDL_DestroyTexture(wall_texture);
 
@@ -43,7 +44,7 @@ pub fn main() !void {
     const pacman = ecs.entity.Pacman.init(&reg);
     _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy_spawn_delay_s), grid);
 
-    const level_loader = try ecs.system.LevelLoader.init(std.heap.smp_allocator, &reg, "resources/level.txt", grid, pacman);
+    const level_loader = try ecs.system.LevelLoader.init(allocator, &reg, "resources/level.txt", grid, pacman);
     defer level_loader.deinit();
 
     const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid);

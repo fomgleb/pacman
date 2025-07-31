@@ -118,6 +118,13 @@ pub fn loadTexture(renderer: *c.SDL_Renderer, file: [*:0]const u8) error{SdlErro
     };
 }
 
+pub fn loadTextureIo(renderer: *c.SDL_Renderer, src: *c.SDL_IOStream, closeio: bool) error{SdlError}!*c.SDL_Texture {
+    return c.IMG_LoadTexture_IO(renderer, src, closeio) orelse {
+        log.err("Failed to IMG_LoadTexture_IO: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
 pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: enum { nearest, linear }) error{SdlError}!void {
     const c_scale_mode = switch (scale_mode) {
         .nearest => c.SDL_SCALEMODE_NEAREST,
@@ -153,6 +160,27 @@ pub fn createTextureFromSurface(renderer: *c.SDL_Renderer, surface: *c.SDL_Surfa
     };
 }
 
+pub fn ioFromConstMem(mem: []const u8) error{SdlError}!*c.SDL_IOStream {
+    return c.SDL_IOFromConstMem(mem.ptr, mem.len) orelse {
+        log.err("Failed to SDL_IOFromConstMem: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+pub fn ioFromFile(path: [*:0]const u8, mode: [*:0]const u8) error{SdlError}!*c.SDL_IOStream {
+    return c.SDL_IOFromFile(path, mode) orelse {
+        log.err("Failed to SDL_IOFromFile: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    };
+}
+
+pub fn closeIO(io_stream: *c.SDL_IOStream) error{SdlError}!void {
+    if (!c.SDL_CloseIO(io_stream)) {
+        log.err("Failed to SDL_CloseIO: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+}
+
 pub const ttf = struct {
     pub fn init() error{SdlError}!void {
         if (!c.TTF_Init()) {
@@ -164,6 +192,13 @@ pub const ttf = struct {
     pub fn openFont(file: [*:0]const u8, ptsize: f32) error{SdlError}!*c.TTF_Font {
         return c.TTF_OpenFont(file, ptsize) orelse {
             log.err("Failed to TTF_OpenFont: {s}", .{c.SDL_GetError()});
+            return error.SdlError;
+        };
+    }
+
+    pub fn openFontIo(src: *c.SDL_IOStream, closeio: bool, ptsize: f32) error{SdlError}!*c.TTF_Font {
+        return c.TTF_OpenFontIO(src, closeio, ptsize) orelse {
+            log.err("Failed to TTF_OpenFontIO: {s}", .{c.SDL_GetError()});
             return error.SdlError;
         };
     }

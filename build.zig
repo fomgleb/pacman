@@ -13,11 +13,24 @@ pub fn build(b: *Build) void {
     const imports = &[_]Import{
         .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
     };
-    const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o });
+    const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o, .preferred_linkage = .static });
     const sdl_image_dep = b.dependency("sdl_image", .{ .target = t, .optimize = o });
-    const sdl_ttf_dep = b.dependency("sdl_ttf", .{ .target = t, .optimize = .ReleaseFast });
+    const sdl_ttf_dep = b.dependency("sdl_ttf", .{ .target = t, .optimize = .ReleaseFast, .preferred_linkage = .static });
+
+    const embed_resources = b.option(bool, "embed-resources", "Embed contents of `resources` folder into the executable?");
+    const options = b.addOptions();
+    options.addOption(bool, "embed_resources", embed_resources orelse false);
 
     const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
+    // TODO: All these manual addAnonymousImport can be done with iterating over "resources" folder
+    // TODO: Rename "resources" -> "assets"
+    main_module.addAnonymousImport("resources/fonts/yoster.ttf", .{ .root_source_file = b.path("resources/fonts/yoster.ttf") });
+    main_module.addAnonymousImport("resources/ghost/ghost-move.png", .{ .root_source_file = b.path("resources/ghost/ghost-move.png") });
+    main_module.addAnonymousImport("resources/pacman/pacman-move.png", .{ .root_source_file = b.path("resources/pacman/pacman-move.png") });
+    main_module.addAnonymousImport("resources/wall/wall.png", .{ .root_source_file = b.path("resources/wall/wall.png") });
+    main_module.addAnonymousImport("resources/level.txt", .{ .root_source_file = b.path("resources/level.txt") });
+    main_module.addAnonymousImport("resources/pellet.png", .{ .root_source_file = b.path("resources/pellet.png") });
+    main_module.addOptions("config", options);
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
     main_module.linkLibrary(sdl_ttf_dep.artifact("SDL3_ttf"));

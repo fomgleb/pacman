@@ -16,7 +16,7 @@
     "tasks": [
         {
             "label": "RUN DEBUG",
-            "command": "zig build run -Doptimize=Debug",
+            "command": "zig build run -Doptimize=Debug --prominent-compile-errors",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -27,7 +27,7 @@
         },
         {
             "label": "RUN TESTS",
-            "command": "zig build test --summary all",
+            "command": "zig build test --prominent-compile-errors --summary all",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -38,16 +38,16 @@
         },
         {
             "label": "BUILD DEBUG",
-            "command": "zig build -Doptimize=Debug",
+            "command": "zig build -Doptimize=Debug --prominent-compile-errors",
             "hide": true,
         },
         {
             "label": "BUILD RELEASE_FAST",
-            "command": "zig build -p ${workspaceFolder} -Doptimize=ReleaseFast",
+            "command": "zig build -p ${workspaceFolder} -Doptimize=ReleaseFast -Dembed-resources",
         },
         {
             "label": "BUILD RELEASE_SAFE",
-            "command": "zig build -p ${workspaceFolder} -Doptimize=ReleaseSafe",
+            "command": "zig build -p ${workspaceFolder} -Doptimize=ReleaseSafe -Dembed-resources",
         },
         {
             "label": "BUILD TEST",
