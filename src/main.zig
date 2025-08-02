@@ -43,6 +43,10 @@ pub fn main() !void {
     const grid = ecs.entity.Grid.init(&reg);
     const pacman = ecs.entity.Pacman.init(&reg);
     _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy_spawn_delay_s), grid);
+    _ = ecs.entity.Background.init(&reg, grid, wall_texture, .up);
+    _ = ecs.entity.Background.init(&reg, grid, wall_texture, .down);
+    _ = ecs.entity.Background.init(&reg, grid, wall_texture, .left);
+    _ = ecs.entity.Background.init(&reg, grid, wall_texture, .right);
 
     const level_loader = try ecs.system.LevelLoader.init(allocator, &reg, "resources/level.txt", grid, pacman);
     defer level_loader.deinit();
@@ -72,9 +76,11 @@ pub fn main() !void {
 
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
+        (ecs.system.BackgroundScaler{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.TextWithinGrid{ .reg = &reg }).system(),
         (ecs.system.MovementAnimator{ .reg = &reg, .renderer = sdl_renderer, .events_holder = events_holder }).system(),
 
+        (ecs.system.RenderClear{ .renderer = sdl_renderer }).system(),
         (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
         ecs.system.LevelRenderer.init(&reg, sdl_renderer, wall_texture, pellet_texture).system(),

@@ -1,3 +1,4 @@
+pub const Background = @import("entity/Background.zig");
 pub const DeltaTime = @import("entity/DeltaTime.zig");
 pub const FastStupidEnemyCreator = @import("entity/FastStupidEnemyCreator.zig");
 pub const Fps = @import("entity/Fps.zig");
