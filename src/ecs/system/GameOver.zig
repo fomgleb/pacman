@@ -24,7 +24,7 @@ pub fn update(self: *const @This()) !void {
 
     self.reg.add(self.delta_time, component.StoppedTag{});
     _ = try self.text_creator.create("GAME OVER", .init(255, 0, 0, 255), .{ .v = .center, .h = .center }, 0.2);
-    _ = try self.text_creator.create("Press Space to restart", .init(255, 255, 255, 255), .{ .v = .center, .h = .bottom, .offset = .{ .x = 0, .y = -50 } }, 0.09);
+    _ = try self.text_creator.create("Press Space to restart", .init(255, 255, 255, 255), .{ .v = .center, .h = .bottom, .rel_offset = .{ .x = 0, .y = -0.1 } }, 0.09);
 }
 
 pub fn system(self: *const @This()) System {

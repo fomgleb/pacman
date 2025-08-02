@@ -43,7 +43,8 @@ pub fn update(self: *const @This()) error{SdlError}!void {
                 .bottom => grid_area.position.y + grid_area.size.y - render_area.size.y,
             },
         };
-        render_area.position = render_area.position.add(layout.offset);
+        const offset = grid_area.size.mul(layout.rel_offset);
+        render_area.position = render_area.position.add(offset);
     }
 }
 
