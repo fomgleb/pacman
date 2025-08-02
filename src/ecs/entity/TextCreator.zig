@@ -24,15 +24,18 @@ pub fn deinit(self: TextCreator) void {
     c.TTF_CloseFont(self.font);
 }
 
-pub fn create(self: *TextCreator, text: []const u8, color: Color, layout: component.Layout) !entt.Entity {
+/// `height` is relative to level height.
+pub fn create(self: *TextCreator, text: []const u8, color: Color, layout: component.Layout, comptime height: f32) !entt.Entity {
     const text_surface = try sdl.ttf.renderTextBlended(self.font, text, color);
     defer c.SDL_DestroySurface(text_surface);
     const texture = try sdl.createTextureFromSurface(self.renderer, text_surface);
+    try sdl.setTextureScaleMode(texture, .nearest);
 
     const text_entity = self.reg.create();
     self.reg.add(text_entity, @as(component.TextTag, .{}));
     self.reg.add(text_entity, @as(component.Texture, texture));
-    self.reg.add(text_entity, @as(component.PositionInWindow, undefined));
+    self.reg.add(text_entity, @as(component.RenderArea, undefined)); // Is set by some `Scaler` system
+    self.reg.add(text_entity, @as(component.RelativeHeight, .init(height)));
     self.reg.add(text_entity, @as(component.GridMembership, .{ .grid_entity = self.grid }));
     self.reg.add(text_entity, @as(component.Layout, layout));
     return text_entity;
@@ -42,7 +45,8 @@ pub fn destory(self: TextCreator) void {
     var view = self.reg.view(.{
         component.TextTag,
         component.Texture,
-        component.PositionInWindow,
+        component.RenderArea,
+        component.RelativeHeight,
         component.GridMembership,
         component.Layout,
     }, .{});

@@ -23,8 +23,8 @@ pub fn update(self: *const @This()) !void {
     if (view.entityIterator().internal_it.slice.len == 0) return;
 
     self.reg.add(self.delta_time, component.StoppedTag{});
-    _ = try self.text_creator.create("GAME OVER", .init(255, 0, 0, 255), .{ .v = .center, .h = .center });
-    _ = try self.text_creator.create("Press Space to restart", .init(0, 0, 0, 255), .{ .v = .center, .h = .bottom, .offset = .{ .x = 0, .y = -50 } });
+    _ = try self.text_creator.create("GAME OVER", .init(255, 0, 0, 255), .{ .v = .center, .h = .center }, 0.2);
+    _ = try self.text_creator.create("Press Space to restart", .init(255, 255, 255, 255), .{ .v = .center, .h = .bottom, .offset = .{ .x = 0, .y = -50 } }, 0.09);
 }
 
 pub fn system(self: *const @This()) System {

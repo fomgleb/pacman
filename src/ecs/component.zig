@@ -26,6 +26,7 @@ pub const FastStupidEnemyAi = @import("component/FastStupidEnemyAi.zig");
 pub const Layout = @import("component/Layout.zig");
 pub const MovableOnGrid = @import("component/MovableOnGrid.zig");
 pub const MovementAnimation = @import("component/MovementAnimation.zig");
+pub const RelativeHeight = @import("component/RelativeHeight.zig");
 
 const std = @import("std");
 const Array2D = @import("../Array2D.zig").Array2D;

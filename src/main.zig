@@ -77,7 +77,7 @@ pub fn main() !void {
         (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
         (ecs.system.BackgroundScaler{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.TextWithinGrid{ .reg = &reg }).system(),
+        (ecs.system.TextWithinGrid{ .reg = &reg, .events_holder = events_holder }).system(),
         (ecs.system.MovementAnimator{ .reg = &reg, .renderer = sdl_renderer, .events_holder = events_holder }).system(),
 
         (ecs.system.RenderClear{ .renderer = sdl_renderer }).system(),
