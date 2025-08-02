@@ -17,7 +17,7 @@ pub fn openSdlIoStream(comptime path: [:0]const u8) error{SdlError}!*c.SDL_IOStr
 }
 
 /// Returned buffer should be deallocated with `freeReadFile`.
-pub fn readFileAlloc(dir: std.fs.Dir, allocator: std.mem.Allocator, file_path: []const u8, max_bytes: usize) ![]const u8 {
+pub fn readFileAlloc(dir: std.fs.Dir, allocator: std.mem.Allocator, comptime file_path: []const u8, max_bytes: usize) ![]const u8 {
     if (config.embed_resources)
         return @embedFile(file_path)
     else
