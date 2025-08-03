@@ -18,8 +18,7 @@ victims: std.AutoArrayHashMap(entt.Entity, void),
 move_sprite_sheet: *c.SDL_Texture,
 
 pub fn init(renderer: *c.SDL_Renderer, allocator: Allocator, pacman: entt.Entity) !@This() {
-    const move_sprite_sheet = try sdl.loadTextureIo(renderer, try asset_loader.openSdlIoStream(move_sprite_sheet_path), true);
-    try sdl.setTextureScaleMode(move_sprite_sheet, .nearest);
+    const move_sprite_sheet = try asset_loader.loadSdlTexture(renderer, move_sprite_sheet_path, .nearest);
 
     var victims = std.AutoArrayHashMap(entt.Entity, void).init(allocator);
     try victims.put(pacman, {});

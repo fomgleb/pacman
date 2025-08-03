@@ -28,3 +28,10 @@ pub fn readFileAlloc(dir: std.fs.Dir, allocator: std.mem.Allocator, comptime fil
 pub fn freeReadFile(allocator: std.mem.Allocator, file: []const u8) void {
     if (!config.embed_resources) allocator.free(file);
 }
+
+/// Returned texture can be deallocated with `SDL_DestroyTexture`.
+pub fn loadSdlTexture(renderer: *c.SDL_Renderer, comptime path: [:0]const u8, scale_mode: sdl.ScaleMode) !*c.SDL_Texture {
+    const texture = try sdl.loadTextureIo(renderer, try openSdlIoStream(path), true);
+    try sdl.setTextureScaleMode(texture, scale_mode);
+    return texture;
+}

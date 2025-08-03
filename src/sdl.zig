@@ -125,7 +125,9 @@ pub fn loadTextureIo(renderer: *c.SDL_Renderer, src: *c.SDL_IOStream, closeio: b
     };
 }
 
-pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: enum { nearest, linear }) error{SdlError}!void {
+pub const ScaleMode = enum { nearest, linear };
+
+pub fn setTextureScaleMode(texture: *c.SDL_Texture, scale_mode: ScaleMode) error{SdlError}!void {
     const c_scale_mode = switch (scale_mode) {
         .nearest => c.SDL_SCALEMODE_NEAREST,
         .linear => c.SDL_SCALEMODE_LINEAR,

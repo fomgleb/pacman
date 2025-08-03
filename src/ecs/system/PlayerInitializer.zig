@@ -35,8 +35,7 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.
     reg.replace(pacman_entity, component.GridMembership{ .grid_entity = grid });
 
     // component.MovementAnimation
-    const move_sprite_sheet = try sdl.loadTextureIo(renderer, try asset_loader.openSdlIoStream(sprite_sheet_path), true);
-    try sdl.setTextureScaleMode(move_sprite_sheet, .nearest);
+    const move_sprite_sheet = try asset_loader.loadSdlTexture(renderer, sprite_sheet_path, .nearest);
     reg.replace(pacman_entity, try component.MovementAnimation.init(move_sprite_sheet, sprite_width, sprite_fps, sprite_can_rotate));
 
     return .{ .pacman_move_sprite_sheet = move_sprite_sheet };

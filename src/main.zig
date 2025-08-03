@@ -26,13 +26,14 @@ pub fn main() !void {
     defer if (gpa_state.deinit() == .leak) @panic("Memory leak detected");
     const allocator = gpa_state.allocator();
 
-    const pellet_texture = try sdl.loadTextureIo(sdl_renderer, try asset_loader.openSdlIoStream("resources/pellet.png"), true);
-    try sdl.setTextureScaleMode(pellet_texture, .nearest);
+    const pellet_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/pellet.png", .nearest);
     defer c.SDL_DestroyTexture(pellet_texture);
 
-    const wall_texture = try sdl.loadTextureIo(sdl_renderer, try asset_loader.openSdlIoStream("resources/wall/wall.png"), true);
-    try sdl.setTextureScaleMode(wall_texture, .nearest);
+    const wall_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/wall/wall.png", .nearest);
     defer c.SDL_DestroyTexture(wall_texture);
+
+    const grass_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/grass/grass.png", .nearest);
+    defer c.SDL_DestroyTexture(grass_texture);
 
     while (true) {
         var reg = entt.Registry.init(allocator);
@@ -97,7 +98,7 @@ pub fn main() !void {
             try sdl.renderClear(sdl_renderer);
             try ecs.system.background_renderer.update(&reg, sdl_renderer);
             try ecs.system.debug_grid_renderer.update(&reg, sdl_renderer);
-            try ecs.system.level_renderer.update(&reg, sdl_renderer, wall_texture, pellet_texture);
+            try ecs.system.level_renderer.update(&reg, sdl_renderer, wall_texture, pellet_texture, grass_texture);
             try ecs.system.movement_animation_renderer.update(&reg, sdl_renderer);
             try ecs.system.texture_renderer.update(&reg, sdl_renderer);
             try ecs.system.text_rendering.update(&reg, sdl_renderer);

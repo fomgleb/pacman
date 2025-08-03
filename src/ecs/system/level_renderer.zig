@@ -5,7 +5,13 @@ const sdl = @import("../../sdl.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer, wall_texture: *c.SDL_Texture, pellet_texture: *c.SDL_Texture) !void {
+pub fn update(
+    reg: *entt.Registry,
+    renderer: *c.SDL_Renderer,
+    wall_texture: *c.SDL_Texture,
+    pellet_texture: *c.SDL_Texture,
+    grass_texture: *c.SDL_Texture,
+) !void {
     var view = reg.view(.{ component.GridCells, component.RenderArea }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -24,9 +30,12 @@ pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer, wall_texture: *c.S
                 };
                 switch (grid_cells.get(.{ .x = x, .y = y })) {
                     .wall => try sdl.renderTexture(renderer, wall_texture, null, dst_render_area),
-                    .pacman_spawn => {},
-                    .pellet => try sdl.renderTexture(renderer, pellet_texture, null, dst_render_area),
-                    .empty => {},
+                    .pacman_spawn => try sdl.renderTexture(renderer, grass_texture, null, dst_render_area),
+                    .pellet => {
+                        try sdl.renderTexture(renderer, grass_texture, null, dst_render_area);
+                        try sdl.renderTexture(renderer, pellet_texture, null, dst_render_area);
+                    },
+                    .empty => try sdl.renderTexture(renderer, grass_texture, null, dst_render_area),
                 }
             }
         }
