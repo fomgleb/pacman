@@ -1,14 +1,10 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-events_holder: entt.Entity,
-
-pub fn update(self: *const @This()) void {
-    const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder).value;
-    var view = self.reg.view(.{ component.MovableOnGrid, component.PositionOnGrid }, .{});
+pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
+    const delta_time = reg.getConst(component.DeltaTimeMeasuredEvent, events_holder).value;
+    var view = reg.view(.{ component.MovableOnGrid, component.PositionOnGrid }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
@@ -26,8 +22,4 @@ pub fn update(self: *const @This()) void {
             .right => position_on_grid.current.x += step,
         }
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

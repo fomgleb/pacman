@@ -1,9 +1,9 @@
 const std = @import("std");
+const asset_loader = @import("asset_loader.zig");
 const c = @import("c.zig");
 const ecs = @import("ecs.zig");
-const asset_loader = @import("asset_loader.zig");
+const FpsLimiter = @import("FpsLimiter.zig");
 const sdl = @import("sdl.zig");
-const System = @import("System.zig");
 const Vec2 = @import("Vec2.zig").Vec2;
 const entt = @import("entt");
 
@@ -37,7 +37,6 @@ pub fn main() !void {
     try sdl.setTextureScaleMode(wall_texture, .nearest);
     defer c.SDL_DestroyTexture(wall_texture);
 
-    const fps = try ecs.entity.Fps.init(&reg);
     const delta_time = try ecs.entity.DeltaTime.init(&reg);
     const events_holder = reg.create();
     const grid = ecs.entity.Grid.init(&reg);
@@ -60,39 +59,37 @@ pub fn main() !void {
     var game_over_text_creator = try ecs.entity.TextCreator.init(&reg, sdl_renderer, grid, "resources/fonts/yoster.ttf", 60);
     defer game_over_text_creator.deinit();
 
-    const systems = [_]System{
-        (ecs.system.SdlEventsHandler{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.DeltaTimeCounter{ .reg = &reg, .events_holder = events_holder, .delta_time = delta_time }).system(),
-        (ecs.system.PlayerInputHandler{ .reg = &reg, .events_holder = events_holder, .pacman = pacman }).system(),
+    var fps_limiter = try FpsLimiter.init(60);
 
-        ecs.system.EnemySpawning.init(&reg, sdl_renderer, pacman, fast_stupid_enemy_creator).system(),
-        (ecs.system.FastStupidEnemyAi{ .reg = &reg }).system(),
-        (ecs.system.MovementOnGrid{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.TurningOnGrid{ .reg = &reg }).system(),
-        (ecs.system.CollidingOnGrid{ .reg = &reg }).system(),
-        (ecs.system.PelletsEating{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.Killing{ .reg = &reg }).system(),
-        ecs.system.GameOver.init(&reg, events_holder, delta_time, &game_over_text_creator).system(),
+    while (!reg.has(ecs.component.QuitEvent, events_holder)) {
+        ecs.system.sdl_events_handler.update(&reg, events_holder);
+        ecs.system.delta_time_counter.update(&reg, events_holder, delta_time);
+        ecs.system.player_input_handler.update(&reg, events_holder, pacman);
 
-        (ecs.system.PlacerInWindowCenter{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.ScalerToGrid{ .reg = &reg }).system(),
-        (ecs.system.BackgroundScaler{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.TextWithinGrid{ .reg = &reg, .events_holder = events_holder }).system(),
-        (ecs.system.MovementAnimator{ .reg = &reg, .renderer = sdl_renderer, .events_holder = events_holder }).system(),
+        try ecs.system.enemy_spawning.update(&reg, pacman, fast_stupid_enemy_creator);
+        ecs.system.fast_stupid_enemy_ai.update(&reg);
+        ecs.system.movement_on_grid.update(&reg, events_holder);
+        ecs.system.turning_on_grid.update(&reg);
+        ecs.system.colliding_on_grid.update(&reg);
+        ecs.system.pellets_eating.update(&reg, events_holder);
+        ecs.system.killing.update(&reg);
+        try ecs.system.game_over.update(&reg, delta_time, &game_over_text_creator);
 
-        (ecs.system.RenderClear{ .renderer = sdl_renderer }).system(),
-        (ecs.system.BackgroundRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
-        (ecs.system.DebugGridRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
-        ecs.system.LevelRenderer.init(&reg, sdl_renderer, wall_texture, pellet_texture).system(),
-        (ecs.system.MovementAnimationRenderer{ .reg = &reg, .renderer = sdl_renderer }).system(),
-        (ecs.system.TextureRenderer{ .reg = &reg }).system(),
-        (ecs.system.TextRendering{ .reg = &reg }).system(),
-        (ecs.system.RenderPresent{ .renderer = sdl_renderer }).system(),
+        ecs.system.palcer_in_window_center.update(&reg, events_holder);
+        ecs.system.scaler_to_grid.update(&reg);
+        ecs.system.background_scaler.update(&reg, events_holder);
+        try ecs.system.text_within_grid.update(&reg);
+        try ecs.system.movement_animator.update(&reg, events_holder);
 
-        ecs.system.FpsLimiter.init(&reg, fps, 60).system(),
-    };
+        try sdl.renderClear(sdl_renderer);
+        try ecs.system.background_renderer.update(&reg, sdl_renderer);
+        try ecs.system.debug_grid_renderer.update(&reg, sdl_renderer);
+        try ecs.system.level_renderer.update(&reg, sdl_renderer, wall_texture, pellet_texture);
+        try ecs.system.movement_animation_renderer.update(&reg, sdl_renderer);
+        try ecs.system.texture_renderer.update(&reg, sdl_renderer);
+        try ecs.system.text_rendering.update(&reg, sdl_renderer);
+        try sdl.renderPresent(sdl_renderer);
 
-    while (!reg.has(ecs.component.QuitEvent, events_holder))
-        for (systems) |system|
-            try system.update();
+        fps_limiter.waitFrameEnd();
+    }
 }

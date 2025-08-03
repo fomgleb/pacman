@@ -1,24 +1,18 @@
 const component = @import("../component.zig");
+const c = @import("../../c.zig");
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-
-pub fn update(self: *const @This()) !void {
-    var view = self.reg.view(.{ component.Texture, component.PositionInWindow }, .{});
+pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) !void {
+    var view = reg.view(.{ component.Texture, component.PositionInWindow }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const texture = view.getConst(component.Texture, entity);
         const position_in_window = view.getConst(component.PositionInWindow, entity);
 
-        try sdl.renderTexture((try sdl.getRendererFromTexture(texture)), texture, null, .{
+        try sdl.renderTexture(renderer, texture, null, .{
             .position = position_in_window,
             .size = try sdl.getTextureSize(texture),
         });
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

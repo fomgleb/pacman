@@ -1,13 +1,10 @@
 const std = @import("std");
 const component = @import("../component.zig");
 const Direction = @import("../../Direction.zig").Direction;
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-
-pub fn update(self: *const @This()) void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry) void {
+    var view = reg.view(.{
         component.EnemyTag,
         component.FastStupidEnemyAi,
         component.MovableOnGrid,
@@ -21,8 +18,4 @@ pub fn update(self: *const @This()) void {
         movable_on_grid.requested_direction = std.crypto.random.enumValue(Direction);
         brain.timer.reset();
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

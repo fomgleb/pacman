@@ -1,17 +1,13 @@
 const component = @import("../component.zig");
 const Rect = @import("../../Rect.zig").Rect;
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-events_holder: entt.Entity,
-
-pub fn update(self: *const @This()) void {
-    const window_size: Vec2(u32) = (self.reg.tryGetConst(component.WindowSizeChangedEvent, self.events_holder) orelse return).new_value;
+pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
+    const window_size: Vec2(u32) = (reg.tryGetConst(component.WindowSizeChangedEvent, events_holder) orelse return).new_value;
     const window_size_f32: Vec2(f32) = window_size.floatFromInt(f32);
 
-    var view = self.reg.view(.{
+    var view = reg.view(.{
         component.BackgroundTag,
         component.GridMembership,
         component.RenderArea,
@@ -20,8 +16,8 @@ pub fn update(self: *const @This()) void {
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const grid = view.getConst(component.GridMembership, entity).grid_entity;
-        const grid_area = self.reg.getConst(component.RenderArea, grid);
-        const grid_cells = self.reg.getConst(component.GridCells, grid);
+        const grid_area = reg.getConst(component.RenderArea, grid);
+        const grid_cells = reg.getConst(component.GridCells, grid);
         const screen_side = view.getConst(component.ScreenSide, entity);
         const area = view.get(component.RenderArea, entity);
 
@@ -47,8 +43,4 @@ pub fn update(self: *const @This()) void {
             },
         };
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

@@ -2,15 +2,11 @@ const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Rect = @import("../../Rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-renderer: *c.SDL_Renderer,
-
-pub fn update(self: *const @This()) !void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) !void {
+    var view = reg.view(.{
         component.BackgroundTag,
         component.GridMembership,
         component.Texture,
@@ -36,12 +32,8 @@ pub fn update(self: *const @This()) !void {
                     .size = cell_size,
                 };
 
-                try sdl.renderTexture(self.renderer, texture, null, dst_area);
+                try sdl.renderTexture(renderer, texture, null, dst_area);
             }
         }
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

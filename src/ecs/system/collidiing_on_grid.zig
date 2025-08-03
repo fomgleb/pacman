@@ -1,13 +1,10 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-
-pub fn update(self: *const @This()) void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry) void {
+    var view = reg.view(.{
         component.MovableOnGrid,
         component.PositionOnGrid,
         component.GridMembership,
@@ -17,7 +14,7 @@ pub fn update(self: *const @This()) void {
         const movable_on_grid = view.get(component.MovableOnGrid, entity);
         const position_on_grid = view.get(component.PositionOnGrid, entity);
         const grid_entity = view.getConst(component.GridMembership, entity).grid_entity;
-        const grid_cells = self.reg.getConst(component.GridCells, grid_entity);
+        const grid_cells = reg.getConst(component.GridCells, grid_entity);
 
         const prev_pos_f32 = position_on_grid.previous;
         const curr_pos_f32 = position_on_grid.current;
@@ -49,8 +46,4 @@ pub fn update(self: *const @This()) void {
             },
         }
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

@@ -1,16 +1,12 @@
 const component = @import("../component.zig");
 const Rect = @import("../../Rect.zig").Rect;
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-events_holder: entt.Entity,
+pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
+    const new_window_size: Vec2(f32) = (reg.tryGetConst(component.WindowSizeChangedEvent, events_holder) orelse return).new_value.floatFromInt(f32);
 
-pub fn update(self: *const @This()) void {
-    const new_window_size: Vec2(f32) = (self.reg.tryGetConst(component.WindowSizeChangedEvent, self.events_holder) orelse return).new_value.floatFromInt(f32);
-
-    var view = self.reg.view(.{
+    var view = reg.view(.{
         component.CenteredInWindowTag,
         component.RenderArea,
         component.AspectRatio,
@@ -25,8 +21,4 @@ pub fn update(self: *const @This()) void {
         const area_pos = new_window_size.sub(area_size).divNum(2);
         render_area.* = .{ .position = area_pos, .size = area_size };
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

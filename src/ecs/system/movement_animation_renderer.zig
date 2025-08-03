@@ -3,14 +3,10 @@ const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Rect = @import("../../Rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-renderer: *c.SDL_Renderer,
-
-pub fn update(self: *const @This()) error{SdlError}!void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!void {
+    var view = reg.view(.{
         component.MovableOnGrid,
         component.RenderArea,
         component.MovementAnimation,
@@ -34,13 +30,9 @@ pub fn update(self: *const @This()) error{SdlError}!void {
                 .right => .{ 0, .none },
             };
 
-            try sdl.renderTextureRotated(self.renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, flip);
+            try sdl.renderTextureRotated(renderer, movement_animation.sprite_sheet, src_area, render_area, angle, null, flip);
         } else {
-            try sdl.renderTexture(self.renderer, movement_animation.sprite_sheet, src_area, render_area);
+            try sdl.renderTexture(renderer, movement_animation.sprite_sheet, src_area, render_area);
         }
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

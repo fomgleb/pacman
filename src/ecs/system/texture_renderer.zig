@@ -3,23 +3,15 @@
 const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-
-pub fn update(self: *const @This()) !void {
-    var view = self.reg.view(.{ component.RenderArea, component.Texture }, .{component.BackgroundTag});
+pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) !void {
+    var view = reg.view(.{ component.RenderArea, component.Texture }, .{component.BackgroundTag});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const render_area = view.getConst(component.RenderArea, entity);
         const renderable_texture = view.getConst(component.Texture, entity);
 
-        const renderer = try sdl.getRendererFromTexture(renderable_texture);
         try sdl.renderTexture(renderer, renderable_texture, null, render_area);
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

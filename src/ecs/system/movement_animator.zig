@@ -3,17 +3,12 @@ const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Rect = @import("../../Rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const entt = @import("entt");
 
-reg: *entt.Registry,
-renderer: *c.SDL_Renderer,
-events_holder: entt.Entity,
+pub fn update(reg: *entt.Registry, events_holder: entt.Entity) error{SdlError}!void {
+    const delta_time = reg.getConst(component.DeltaTimeMeasuredEvent, events_holder).value;
 
-pub fn update(self: *const @This()) error{SdlError}!void {
-    const delta_time = self.reg.getConst(component.DeltaTimeMeasuredEvent, self.events_holder).value;
-
-    var view = self.reg.view(.{ component.MovableOnGrid, component.MovementAnimation }, .{});
+    var view = reg.view(.{ component.MovableOnGrid, component.MovementAnimation }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const movable_on_grid = view.getConst(component.MovableOnGrid, entity);
@@ -43,8 +38,4 @@ pub fn update(self: *const @This()) error{SdlError}!void {
             }
         }
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

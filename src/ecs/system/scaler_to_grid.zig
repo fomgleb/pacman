@@ -1,13 +1,10 @@
 const component = @import("../component.zig");
 const Rect = @import("../../Rect.zig").Rect;
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-
-pub fn update(self: *const @This()) void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry) void {
+    var view = reg.view(.{
         component.PositionOnGrid,
         component.RenderArea,
         component.GridMembership,
@@ -19,8 +16,8 @@ pub fn update(self: *const @This()) void {
         const render_area = view.get(component.RenderArea, entity);
 
         const grid = view.getConst(component.GridMembership, entity).grid_entity;
-        const grid_size_f32 = self.reg.getConst(component.GridCells, grid).size.floatFromInt(f32);
-        const grid_render_area = self.reg.getConst(component.RenderArea, grid);
+        const grid_size_f32 = reg.getConst(component.GridCells, grid).size.floatFromInt(f32);
+        const grid_render_area = reg.getConst(component.RenderArea, grid);
 
         const cell_size = grid_render_area.size.div(grid_size_f32);
 
@@ -29,8 +26,4 @@ pub fn update(self: *const @This()) void {
             .size = cell_size,
         };
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }

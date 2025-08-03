@@ -3,15 +3,11 @@ const component = @import("../component.zig");
 const c = @import("../../c.zig");
 const Rect = @import("../../Rect.zig").Rect;
 const sdl = @import("../../sdl.zig");
-const System = @import("../../System.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-reg: *entt.Registry,
-events_holder: entt.Entity,
-
-pub fn update(self: *const @This()) error{SdlError}!void {
-    var view = self.reg.view(.{
+pub fn update(reg: *entt.Registry) error{SdlError}!void {
+    var view = reg.view(.{
         component.TextTag,
         component.Texture,
         component.RenderArea,
@@ -46,8 +42,4 @@ pub fn update(self: *const @This()) error{SdlError}!void {
         const offset = grid_area.size.mul(layout.rel_offset);
         render_area.position = render_area.position.add(offset);
     }
-}
-
-pub fn system(self: *const @This()) System {
-    return System.init(self);
 }
