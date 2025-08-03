@@ -26,6 +26,7 @@ pub fn build(b: *Build) void {
     // TODO: Rename "resources" -> "assets"
     main_module.addAnonymousImport("resources/fonts/yoster.ttf", .{ .root_source_file = b.path("resources/fonts/yoster.ttf") });
     main_module.addAnonymousImport("resources/ghost/ghost-move.png", .{ .root_source_file = b.path("resources/ghost/ghost-move.png") });
+    main_module.addAnonymousImport("resources/grass/grass.png", .{ .root_source_file = b.path("resources/grass/grass.png") });
     main_module.addAnonymousImport("resources/pacman/pacman-move.png", .{ .root_source_file = b.path("resources/pacman/pacman-move.png") });
     main_module.addAnonymousImport("resources/wall/wall.png", .{ .root_source_file = b.path("resources/wall/wall.png") });
     main_module.addAnonymousImport("resources/level.txt", .{ .root_source_file = b.path("resources/level.txt") });

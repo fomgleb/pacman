@@ -1,6 +1,6 @@
 .{
     .name = .pacman,
-    .version = "0.1.0",
+    .version = "0.2.0",
     .fingerprint = 0xa1c2e4b87513a3dd,
     .minimum_zig_version = "0.14.1",
     .dependencies = .{
