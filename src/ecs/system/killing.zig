@@ -13,7 +13,6 @@ pub fn update(reg: *entt.Registry) void {
         const victims = view.getConst(component.Killer, entity).victims;
         var victims_iterator = victims.iterator();
         while (victims_iterator.next()) |victim| {
-            reg.removeIfExists(component.DiedEvent, victim.key_ptr.*);
             if (reg.has(component.DeadTag, victim.key_ptr.*)) continue;
             const victim_position_on_grid = reg.getConst(component.PositionOnGrid, victim.key_ptr.*);
             const collided = sdl.hasRectIntersectionFloat(
@@ -22,7 +21,6 @@ pub fn update(reg: *entt.Registry) void {
             );
             if (collided) {
                 reg.add(victim.key_ptr.*, component.DeadTag{});
-                reg.add(victim.key_ptr.*, component.DiedEvent{});
             }
         }
     }

@@ -9,7 +9,10 @@ const entt = @import("entt");
 
 const window_title = "Pacman";
 const initial_window_size = Vec2(u32){ .x = 600, .y = 400 };
-const enemy_spawn_delay_s = 5;
+const enemy1_spawn_delay_s = 5;
+const enemy2_spawn_delay_s = 25;
+const enemy3_spawn_delay_s = 55;
+const enemy4_spawn_delay_s = 95;
 
 pub fn main() !void {
     try sdl.initSubSystem(c.SDL_INIT_VIDEO);
@@ -43,7 +46,10 @@ pub fn main() !void {
         const events_holder = reg.create();
         const grid = ecs.entity.Grid.init(&reg);
         const pacman = ecs.entity.Pacman.init(&reg);
-        _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy_spawn_delay_s), grid);
+        _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy1_spawn_delay_s), grid);
+        _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy2_spawn_delay_s), grid);
+        _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy3_spawn_delay_s), grid);
+        _ = ecs.entity.OneEnemyOnGridSpawner.init(&reg, try .init(enemy4_spawn_delay_s), grid);
         _ = ecs.entity.Background.init(&reg, grid, wall_texture, .up);
         _ = ecs.entity.Background.init(&reg, grid, wall_texture, .down);
         _ = ecs.entity.Background.init(&reg, grid, wall_texture, .left);

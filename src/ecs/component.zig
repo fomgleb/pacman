@@ -13,7 +13,6 @@ pub const PlayerRequestedRestartEvent = struct {};
 pub const WindowSizeChangedEvent = struct { new_value: Vec2(u32) };
 pub const DeltaTimeMeasuredEvent = struct { value: u64 };
 pub const QuitEvent = struct {};
-pub const DiedEvent = struct {};
 pub const Timer = std.time.Timer;
 pub const GridMembership = struct { grid_entity: entt.Entity };
 pub const PelletsEater = struct { left_pellets_count: u32, eaten_pellets_count: u32 };
