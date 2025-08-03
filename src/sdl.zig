@@ -181,6 +181,15 @@ pub fn closeIO(io_stream: *c.SDL_IOStream) error{SdlError}!void {
     }
 }
 
+pub fn getWindowSize(window: *c.SDL_Window) error{SdlError}!Vec2(u32) {
+    var window_size: Vec2(c_int) = undefined;
+    if (!c.SDL_GetWindowSize(window, &window_size.x, &window_size.y)) {
+        log.err("Failed to SDL_GetWindowSize: {s}", .{c.SDL_GetError()});
+        return error.SdlError;
+    }
+    return window_size.intCast(u32);
+}
+
 pub const ttf = struct {
     pub fn init() error{SdlError}!void {
         if (!c.TTF_Init()) {

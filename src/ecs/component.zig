@@ -9,6 +9,7 @@ pub const TextTag = struct {};
 pub const CenteredInWindowTag = void;
 pub const BackgroundTag = struct {};
 pub const PlayerInputEvent = struct { direction: Direction };
+pub const PlayerRequestedRestartEvent = struct {};
 pub const WindowSizeChangedEvent = struct { new_value: Vec2(u32) };
 pub const DeltaTimeMeasuredEvent = struct { value: u64 };
 pub const QuitEvent = struct {};

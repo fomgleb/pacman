@@ -15,6 +15,7 @@ pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
                 c.SDLK_DOWN => reg.addOrReplace(events_holder, component.PlayerInputEvent{ .direction = .down }),
                 c.SDLK_LEFT => reg.addOrReplace(events_holder, component.PlayerInputEvent{ .direction = .left }),
                 c.SDLK_RIGHT => reg.addOrReplace(events_holder, component.PlayerInputEvent{ .direction = .right }),
+                c.SDLK_SPACE => reg.addOrReplace(events_holder, component.PlayerRequestedRestartEvent{}),
                 else => {},
             },
             c.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED => {
