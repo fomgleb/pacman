@@ -83,7 +83,7 @@ pub fn main() !void {
             if (reg.has(ecs.component.PlayerRequestedRestartEvent, events_holder)) break;
 
             if (!is_paused_on_game_over) {
-                try ecs.system.enemy_spawning.update(&reg, pacman, fast_stupid_enemy_creator);
+                try ecs.system.enemy_spawning.update(&reg, allocator, pacman, fast_stupid_enemy_creator);
                 ecs.system.fast_stupid_enemy_ai.update(&reg);
                 ecs.system.movement_on_grid.update(&reg, events_holder);
                 ecs.system.turning_on_grid.update(&reg);
