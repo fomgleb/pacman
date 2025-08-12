@@ -3,12 +3,12 @@ const entt = @import("entt");
 
 pub fn init(
     reg: *entt.Registry,
-    enemy_spawner: component.CanSpawnOne,
+    can_spawn_one: component.CanSpawnOne,
     grid: entt.Entity,
 ) entt.Entity {
     const entity = reg.create();
 
-    reg.add(entity, @as(component.CanSpawnOne, enemy_spawner));
+    reg.add(entity, @as(component.CanSpawnOne, can_spawn_one));
     reg.add(entity, @as(component.GridMembership, .{ .grid_entity = grid }));
 
     return entity;

@@ -9,7 +9,7 @@ sprite_can_rotate: bool,
 current_frame_index: f32 = 0,
 sprite_sheet_read_direction: enum { right, left } = .right,
 
-pub fn init(sprite_sheet: *c.SDL_Texture, sprite_width: f32, fps: f32, sprite_can_rotate: bool) !@This() {
+pub fn init(sprite_sheet: *c.SDL_Texture, sprite_width: f32, fps: f32, sprite_can_rotate: bool) error{SdlError}!@This() {
     return .{
         .sprite_sheet = sprite_sheet,
         .sprite_size = .init(sprite_width, (try sdl.getTextureSize(sprite_sheet)).y),

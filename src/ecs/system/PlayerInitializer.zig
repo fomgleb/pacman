@@ -8,7 +8,7 @@ const entt = @import("entt");
 
 const texture_path = "resources/pacman.png";
 const initial_direction = Direction.down;
-const speed = 3.0;
+const speed = 4.0;
 const sprite_sheet_path = "resources/pacman/pacman-move.png";
 const sprite_width = 17;
 const sprite_fps = speed * 40.0;

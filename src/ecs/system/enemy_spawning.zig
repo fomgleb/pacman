@@ -10,16 +10,14 @@ const Direction = @import("../../Direction.zig").Direction;
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
-const enemy_move_speed = 5;
-const enemy_change_direction_period_s = 1;
 const spawn_distance = 15;
 
-pub fn update(reg: *entt.Registry, allocator: Allocator, pacman: entt.Entity, fast_stupid_enemy_creator: entity.FastStupidEnemyCreator) !void {
+pub fn update(reg: *entt.Registry, allocator: Allocator, pacman: entt.Entity) !void {
     var view = reg.view(.{ component.CanSpawnOne, component.GridMembership }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |e| {
-        const enemy_spawner: *component.CanSpawnOne = view.get(component.CanSpawnOne, e);
-        if (enemy_spawner.is_spawned or enemy_spawner.timer.read() < enemy_spawner.spawn_delay) continue;
+        const can_spawn_one: *component.CanSpawnOne = view.get(component.CanSpawnOne, e);
+        if (can_spawn_one.is_spawned or can_spawn_one.timer.read() < can_spawn_one.spawn_delay) continue;
         const grid: entt.Entity = view.getConst(component.GridMembership, e).grid_entity;
         const grid_cells: component.GridCells = view.getConst(component.GridCells, grid);
         const pacman_position: component.PositionOnGrid = reg.getConst(component.PositionOnGrid, pacman);
@@ -29,15 +27,11 @@ pub fn update(reg: *entt.Registry, allocator: Allocator, pacman: entt.Entity, fa
             continue;
         };
 
-        _ = try fast_stupid_enemy_creator.create(
-            reg,
-            random_position.floatFromInt(f32),
-            .init(enemy_move_speed, random.enumValue(Direction)),
-            grid,
-            enemy_change_direction_period_s,
-        );
+        const enemy: entt.Entity = try can_spawn_one.entity_creator.create();
+        reg.get(component.PositionOnGrid, enemy).* = .init(random_position.floatFromInt(f32));
+        reg.get(component.MovableOnGrid, enemy).requested_direction = random.enumValue(Direction);
 
-        enemy_spawner.is_spawned = true;
+        can_spawn_one.is_spawned = true;
     }
 }
 
@@ -61,24 +55,24 @@ fn getEnemySpawnPosition(allocator: Allocator, grid_cells: component.GridCells, 
 
     var distance_from_pacman: usize = 0;
     while (points_to_check.count != 0 and distance_from_pacman != spawn_distance + 1) {
-        const checking_point: Point = points_to_check.readItem().?;
+        const current_point: Point = points_to_check.readItem().?;
 
-        const potential_points_to_check: [4]Vec2(usize) = .{
-            .{ .x = checking_point.position.x, .y = checking_point.position.y - 1 },
-            .{ .x = checking_point.position.x + 1, .y = checking_point.position.y },
-            .{ .x = checking_point.position.x, .y = checking_point.position.y + 1 },
-            .{ .x = checking_point.position.x - 1, .y = checking_point.position.y },
+        const potential_positions_to_check: [4]Vec2(usize) = .{
+            .{ .x = current_point.position.x, .y = current_point.position.y - 1 },
+            .{ .x = current_point.position.x + 1, .y = current_point.position.y },
+            .{ .x = current_point.position.x, .y = current_point.position.y + 1 },
+            .{ .x = current_point.position.x - 1, .y = current_point.position.y },
         };
 
-        for (potential_points_to_check) |potential_point| {
-            if (grid_cells.get(potential_point) != .wall and
-                !checked_points.contains(.init(potential_point, checking_point.distance -| 1)) and
-                !checked_points.contains(.init(potential_point, checking_point.distance + 1)))
+        for (potential_positions_to_check) |potential_position| {
+            if (grid_cells.get(potential_position) != .wall and
+                !checked_points.contains(.init(potential_position, current_point.distance -| 1)) and
+                !checked_points.contains(.init(potential_position, current_point.distance + 1)))
             {
-                const point: Point = .init(potential_point, checking_point.distance + 1);
-                try points_to_check.writeItem(point);
-                try checked_points.put(point, {}); // TODO: Bad naming: `point` will become `checking_point`, but it's already in `checked_points`
-                distance_from_pacman = checking_point.distance + 1;
+                const new_point: Point = .init(potential_position, current_point.distance + 1);
+                try points_to_check.writeItem(new_point);
+                try checked_points.put(new_point, {});
+                distance_from_pacman = current_point.distance + 1;
             }
         }
     }
