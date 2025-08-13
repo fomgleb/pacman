@@ -12,4 +12,13 @@ pub const Direction = enum {
             .right => other == .left,
         };
     }
+
+    pub fn opposite(self: Direction) Direction {
+        return switch (self) {
+            .up => .down,
+            .down => .up,
+            .left => .right,
+            .right => .left,
+        };
+    }
 };

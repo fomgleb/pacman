@@ -15,6 +15,7 @@ const ghost3_spawn_delay_s = 60;
 
 const fast_stupid_ghost_config: ecs.entity.GhostCreator.Config = .{
     .find_path_chance = 0.1,
+    .ignore_turn_chance = 0.9,
     .find_path_period_s = 1,
     .move_speed = 5.5,
     .sprite_fps = 30,
@@ -22,6 +23,7 @@ const fast_stupid_ghost_config: ecs.entity.GhostCreator.Config = .{
 
 const kinda_smart_ghost_config: ecs.entity.GhostCreator.Config = .{
     .find_path_chance = 0.4,
+    .ignore_turn_chance = 0.5,
     .find_path_period_s = 1,
     .move_speed = 4.2,
     .sprite_fps = 25,
@@ -29,7 +31,8 @@ const kinda_smart_ghost_config: ecs.entity.GhostCreator.Config = .{
 
 const fat_genious_ghost_config: ecs.entity.GhostCreator.Config = .{
     .find_path_chance = 0.98,
-    .find_path_period_s = 0.2,
+    .ignore_turn_chance = 0.2,
+    .find_path_period_s = 1,
     .move_speed = 3.4,
     .sprite_fps = 20,
 };
