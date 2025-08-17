@@ -5,7 +5,7 @@ const entt = @import("entt");
 
 const pellet_eat_distance = 0.2;
 
-pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
+pub fn update(reg: *entt.Registry) void {
     var view = reg.view(.{
         component.GridMembership,
         component.PositionOnGrid,
@@ -35,8 +35,5 @@ pub fn update(reg: *entt.Registry, events_holder: entt.Entity) void {
         grid_cells.set(potential_pellet_pos.intFromFloat(usize), .empty);
         pellets_eater.eaten_pellets_count += 1;
         pellets_eater.left_pellets_count -= 1;
-        if (pellets_eater.left_pellets_count == 0) {
-            reg.addOrReplace(events_holder, component.QuitEvent{});
-        }
     }
 }

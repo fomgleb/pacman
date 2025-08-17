@@ -4,6 +4,7 @@ const c = @import("c.zig");
 const ecs = @import("ecs.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
 const sdl = @import("sdl.zig");
+const TextSpawner = @import("TextSpawner.zig");
 const Vec2 = @import("Vec2.zig").Vec2;
 const entt = @import("entt");
 
@@ -117,53 +118,88 @@ pub fn main() !void {
         const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid);
         defer player_initializer.deinit();
 
-        var game_over_text_creator = try ecs.entity.TextCreator.init(&reg, sdl_renderer, grid, "resources/fonts/yoster.ttf", 60);
-        defer game_over_text_creator.deinit();
-
         var fps_limiter = try FpsLimiter.init(60);
 
-        var is_paused_on_game_over: bool = false;
+        var game_is_paused: bool = false;
 
         const window_size: Vec2(f32) = (try sdl.getWindowSize(sdl_window)).floatFromInt(f32);
         ecs.system.palcer_in_window_center.init(&reg, window_size);
         ecs.system.background_scaler.init(&reg, window_size);
 
+        const yoster_font: *c.TTF_Font = try sdl.ttf.openFontIo(try asset_loader.openSdlIoStream("resources/fonts/yoster.ttf"), true, 60);
+        defer c.TTF_CloseFont(yoster_font);
+
+        var game_over: ecs.system.GameOver = .init(&reg, sdl_renderer, grid, yoster_font);
+        defer game_over.deinit();
+
+        var game_win: ecs.system.GameWin = try .init(&reg, allocator, sdl_renderer, grid, yoster_font);
+        defer game_win.deinit();
+
+        var profiling_timer: std.time.Timer = try .start();
+
         while (true) {
             ecs.system.sdl_events_handler.update(&reg, events_holder);
+            std.log.debug("sdl_events_handler: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             ecs.system.delta_time_counter.update(&reg, events_holder, delta_time);
+            std.log.debug("delta_time_counter: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             ecs.system.player_input_handler.update(&reg, events_holder, pacman);
+            std.log.debug("player_input_handler: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
 
             if (reg.has(ecs.component.PlayerRequestedRestartEvent, events_holder)) break;
 
-            if (!is_paused_on_game_over) {
+            if (!game_is_paused) {
                 try ecs.system.enemy_spawning.update(&reg, allocator, pacman);
+                std.log.debug("enemy_spawning: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
                 try ecs.system.ghost_ai.update(&reg, allocator, pacman);
+                std.log.debug("ghost_ai: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
                 ecs.system.movement_on_grid.update(&reg, events_holder);
+                std.log.debug("movement_on_grid: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
                 ecs.system.turning_on_grid.update(&reg);
+                std.log.debug("turning_on_grid: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
                 ecs.system.colliding_on_grid.update(&reg);
-                ecs.system.pellets_eating.update(&reg, events_holder);
+                std.log.debug("colliding_on_grid: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
+                ecs.system.pellets_eating.update(&reg);
+                std.log.debug("pellets_eating: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
                 ecs.system.killing.update(&reg);
-                try ecs.system.game_over.update(&reg, delta_time, &game_over_text_creator, &is_paused_on_game_over);
+                std.log.debug("killing: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
+                try game_over.update(&game_is_paused);
+                std.log.debug("game_over: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
+                try game_win.update(pacman, &game_is_paused);
+                std.log.debug("game_win: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
+                try ecs.system.movement_animator.update(&reg, events_holder);
+                std.log.debug("movement_animator: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             }
 
             if (reg.has(ecs.component.QuitEvent, events_holder)) return;
 
             ecs.system.palcer_in_window_center.update(&reg, events_holder);
+            std.log.debug("palcer_in_window_center: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             ecs.system.scaler_to_grid.update(&reg);
+            std.log.debug("scaler_to_grid: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             ecs.system.background_scaler.update(&reg, events_holder);
-            try ecs.system.text_within_grid.update(&reg);
-            try ecs.system.movement_animator.update(&reg, events_holder);
+            std.log.debug("background_scaler: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
+            try ecs.system.layouted_scaling.update(&reg);
+            std.log.debug("layouted_scaling: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
 
             try sdl.renderClear(sdl_renderer);
+            std.log.debug("sdl.renderClear: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.background_renderer.update(&reg, sdl_renderer);
+            std.log.debug("background_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.debug_grid_renderer.update(&reg, sdl_renderer);
+            std.log.debug("debug_grid_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.level_renderer.update(&reg, sdl_renderer, wall_texture, pellet_texture, grass_texture);
+            std.log.debug("level_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.movement_animation_renderer.update(&reg, sdl_renderer);
+            std.log.debug("movement_animation_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.texture_renderer.update(&reg, sdl_renderer);
+            std.log.debug("texture_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try ecs.system.text_rendering.update(&reg, sdl_renderer);
+            std.log.debug("text_rendering: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
             try sdl.renderPresent(sdl_renderer);
+            std.log.debug("sdl.renderPresent: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
 
             fps_limiter.waitFrameEnd();
+            std.log.debug("fps_limiter.waitFrameEnd: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
         }
     }
 }

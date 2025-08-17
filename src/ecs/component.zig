@@ -4,8 +4,6 @@ pub const GridCells = Array2D(GridCell);
 pub const PlayerTag = struct {};
 pub const EnemyTag = struct {};
 pub const DeadTag = struct {};
-pub const StoppedTag = struct {};
-pub const TextTag = struct {};
 pub const CenteredInWindowTag = void;
 pub const BackgroundTag = struct {};
 pub const PlayerInputEvent = struct { direction: Direction };
@@ -26,7 +24,7 @@ pub const GhostAi = @import("component/GhostAi.zig");
 pub const Layout = @import("component/Layout.zig");
 pub const MovableOnGrid = @import("component/MovableOnGrid.zig");
 pub const MovementAnimation = @import("component/MovementAnimation.zig");
-pub const RelativeHeight = @import("component/RelativeHeight.zig");
+pub const RelativeSize = @import("component/RelativeSize.zig");
 
 const std = @import("std");
 const Array2D = @import("../Array2D.zig").Array2D;

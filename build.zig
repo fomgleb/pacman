@@ -33,6 +33,7 @@ pub fn build(b: *Build) void {
     main_module.addAnonymousImport("resources/wall/wall.png", .{ .root_source_file = b.path("resources/wall/wall.png") });
     main_module.addAnonymousImport("resources/level.txt", .{ .root_source_file = b.path("resources/level.txt") });
     main_module.addAnonymousImport("resources/pellet.png", .{ .root_source_file = b.path("resources/pellet.png") });
+    main_module.addAnonymousImport("resources/smile-face.png", .{ .root_source_file = b.path("resources/smile-face.png") });
     main_module.addOptions("config", options);
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
