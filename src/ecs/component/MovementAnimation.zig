@@ -1,4 +1,4 @@
-const c = @import("../../c.zig");
+const c = @import("../../c.zig").c;
 const sdl = @import("../../sdl.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 

@@ -1,6 +1,6 @@
 const component = @import("ecs/component.zig");
 const Color = @import("Color.zig");
-const c = @import("c.zig");
+const c = @import("c.zig").c;
 const sdl = @import("sdl.zig");
 const entt = @import("entt");
 const TextSpawner = @This();

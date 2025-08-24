@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig");
+const c = @import("../../c.zig").c;
 const sdl = @import("../../sdl.zig");
 const entt = @import("entt");
 

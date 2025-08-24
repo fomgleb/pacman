@@ -1,5 +1,5 @@
 const Color = @import("Color.zig");
-const c = @import("c.zig");
+const c = @import("c.zig").c;
 const log = @import("std").log.scoped(.sdl);
 const Vec2 = @import("Vec2.zig").Vec2;
 const Rect = @import("Rect.zig").Rect;

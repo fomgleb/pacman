@@ -1,6 +1,6 @@
 const std = @import("std");
 const component = @import("ecs/component.zig");
-const c = @import("c.zig");
+const c = @import("c.zig").c;
 const asset_loader = @import("asset_loader.zig");
 const entt = @import("entt");
 const ImageSpawner = @This();

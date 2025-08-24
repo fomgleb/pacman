@@ -1,24 +1,24 @@
 .{
     .name = .pacman,
-    .version = "0.2.0",
+    .version = "0.4.0",
     .fingerprint = 0xa1c2e4b87513a3dd,
-    .minimum_zig_version = "0.14.1",
+    .minimum_zig_version = "0.15.1",
     .dependencies = .{
         .sdl = .{
-            .url = "https://github.com/castholm/SDL/archive/refs/tags/v0.2.5+3.2.18.tar.gz",
-            .hash = "sdl-0.2.5+3.2.18-7uIn9FwZfwHKOwSubcg5_CiW4fXag5IIsiV_jnLdkpDM",
+            .url = "git+https://github.com/castholm/SDL#1994ca5dbad5a3e3c670a9ab8533d86cfd97bdc0",
+            .hash = "sdl-0.2.6+3.2.20-7uIn9NgjfwHH5a6HhyLHat2nHU3OP5B05QHhKJKuxEex",
         },
         .sdl_image = .{
-            .url = "git+https://github.com/allyourcodebase/SDL_image#54a9d8c0e252f96f8c167d41a0ced4ee98093f9b",
-            .hash = "SDL_image-3.2.4--aJoHa0VAABaZkV7FOIgwlUzCfXJ8BOZ4XzITKm8INAV",
+            .url = "git+https://github.com/allyourcodebase/SDL_image#87e0f1f4c612441a6cf38cda07d8fe4dfc06b05e",
+            .hash = "SDL_image-3.2.4--aJoHb8WAACjnDQ_-PhUi-MNh_mYFODwxANtvY3F-yLe",
         },
         .sdl_ttf = .{
-            .url = "git+https://github.com/allyourcodebase/SDL_ttf#0e14f7c5a6c4f6c0cc94bdaecd1596d46892521b",
-            .hash = "SDL_ttf-3.2.2-PNW5xLoQAAAKx53Q3-wGyX9NXxT4e1XFkcJFWZs7Q9u7",
+            .url = "git+https://github.com/allyourcodebase/SDL_ttf#579f2e88f7c0788c80a9a6a3858f3665c79f74cb",
+            .hash = "SDL_ttf-3.2.2-PNW5xMwRAACCG5b3sazQTEj4I6jM1QCQ3KV0MfbrzRHT",
         },
         .entt = .{
-            .url = "git+https://github.com/prime31/zig-ecs#450e9a322ea9087ffc6d471648a371f50067b55b",
-            .hash = "entt-1.0.0-qJPtbOrVAgCbPkX-YI7ERLt_4ACkKiSDSNQAc-6YlxFr",
+            .url = "git+https://github.com/prime31/zig-ecs#1616fe6b750f7a62684ac955471f1357ceeb08d3",
+            .hash = "entt-1.0.0-qJPtbLvWAgA7zKldpRMGFZJtdyCpmMekcT8T7dF1w5Wt",
         },
     },
     .paths = .{

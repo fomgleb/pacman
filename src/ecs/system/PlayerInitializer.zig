@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig");
+const c = @import("../../c.zig").c;
 const Direction = @import("../../Direction.zig").Direction;
 const asset_loader = @import("../../asset_loader.zig");
 const sdl = @import("../../sdl.zig");

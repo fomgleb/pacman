@@ -1,4 +1,6 @@
-const time = @import("std").time;
+const std = @import("std");
+const time = std.time;
+const sleep = std.Thread.sleep;
 const FpsLimiter = @This();
 
 timer: time.Timer,
@@ -12,5 +14,5 @@ pub fn init(required_fps: u64) !FpsLimiter {
 }
 
 pub fn waitFrameEnd(self: *FpsLimiter) void {
-    time.sleep(self.max_ns_per_frame -| self.timer.lap());
+    sleep(self.max_ns_per_frame -| self.timer.lap());
 }

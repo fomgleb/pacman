@@ -1,6 +1,6 @@
 const std = @import("std");
 const asset_loader = @import("asset_loader.zig");
-const c = @import("c.zig");
+const c = @import("c.zig").c;
 const ecs = @import("ecs.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
 const sdl = @import("sdl.zig");

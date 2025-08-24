@@ -4,6 +4,7 @@ const random = std.crypto.random;
 const pow = std.math.pow;
 const component = @import("../component.zig");
 const Direction = @import("../../Direction.zig").Direction;
+const Queue = @import("../../Queue.zig").Queue;
 const rand = @import("../../rand.zig");
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
@@ -105,12 +106,12 @@ fn calculateNextDirection(
     var cells: std.AutoHashMap(Vec2(usize), Vec2(usize)) = .init(allocator);
     defer cells.deinit();
 
-    var queue: std.fifo.LinearFifo(Vec2(usize), .Dynamic) = .init(allocator);
-    defer queue.deinit();
-    try queue.writeItem(pacman_pos);
+    var queue: Queue(Vec2(usize)) = .init(allocator);
+    defer while (queue.dequeue()) |_| {};
+    try queue.enqueue(pacman_pos);
 
     while (true) {
-        const current_pos: Vec2(usize) = queue.readItem().?;
+        const current_pos: Vec2(usize) = queue.dequeue().?;
 
         if (std.meta.eql(current_pos, enemy_pos)) break;
 
@@ -123,7 +124,7 @@ fn calculateNextDirection(
 
         for (potential_positions_to_check) |potential_position| {
             if (grid_cells.get(potential_position) != .wall and !cells.contains(potential_position)) {
-                try queue.writeItem(potential_position);
+                try queue.enqueue(potential_position);
                 try cells.put(potential_position, current_pos);
             }
         }

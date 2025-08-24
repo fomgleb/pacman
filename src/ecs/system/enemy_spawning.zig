@@ -7,6 +7,7 @@ const component = @import("../component.zig");
 const entity = @import("../entity.zig");
 const c = @import("../../c.zig");
 const Direction = @import("../../Direction.zig").Direction;
+const Queue = @import("../../Queue.zig").Queue;
 const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
 
@@ -46,16 +47,19 @@ const Point = struct {
 
 // Spread waves from the pacman to find a point where to spawn an enemy.
 fn getEnemySpawnPosition(allocator: Allocator, grid_cells: component.GridCells, pacman_position: Vec2(usize)) !?Vec2(usize) {
-    var points_to_check: std.fifo.LinearFifo(Point, .{ .Static = pow(usize, spawn_distance * 2 + 1, 2) }) = .init();
-    try points_to_check.writeItem(.{ .position = pacman_position, .distance = 0 });
+    var points_to_check_buf: [pow(usize, spawn_distance * 2 + 1, 2) * @sizeOf(Point)]u8 = undefined;
+    var fba_state: std.heap.FixedBufferAllocator = .init(&points_to_check_buf);
+    const fb_allocator: Allocator = fba_state.allocator();
+    var points_to_check: Queue(Point) = .init(fb_allocator);
+    try points_to_check.enqueue(.{ .position = pacman_position, .distance = 0 });
 
     var checked_points: std.AutoHashMap(Point, void) = .init(allocator);
     defer checked_points.deinit();
     try checked_points.put(.{ .position = pacman_position, .distance = 0 }, {});
 
     var distance_from_pacman: usize = 0;
-    while (points_to_check.count != 0 and distance_from_pacman != spawn_distance + 1) {
-        const current_point: Point = points_to_check.readItem().?;
+    while (!points_to_check.empty() and distance_from_pacman != spawn_distance + 1) {
+        const current_point: Point = points_to_check.dequeue().?;
 
         const potential_positions_to_check: [4]Vec2(usize) = .{
             .{ .x = current_point.position.x, .y = current_point.position.y - 1 },
@@ -70,25 +74,25 @@ fn getEnemySpawnPosition(allocator: Allocator, grid_cells: component.GridCells, 
                 !checked_points.contains(.init(potential_position, current_point.distance + 1)))
             {
                 const new_point: Point = .init(potential_position, current_point.distance + 1);
-                try points_to_check.writeItem(new_point);
+                try points_to_check.enqueue(new_point);
                 try checked_points.put(new_point, {});
                 distance_from_pacman = current_point.distance + 1;
             }
         }
     }
 
-    const possible_spawn_points: std.fifo.LinearFifo(Point, .{ .Static = pow(usize, spawn_distance * 2 + 1, 2) }) = blk: {
-        points_to_check.discard(points_to_check.count);
-        var furthest_points = points_to_check;
+    fba_state.reset();
+    const possible_spawn_points: std.ArrayList(Point) = blk: {
+        var furthest_points: std.ArrayList(Point) = try .initCapacity(fb_allocator, points_to_check_buf.len / @sizeOf(Point));
         var iterator = checked_points.keyIterator();
         while (iterator.next()) |checked_point|
             if (checked_point.distance == spawn_distance)
-                try furthest_points.writeItem(checked_point.*);
+                try furthest_points.append(fb_allocator, checked_point.*);
         break :blk furthest_points;
     };
 
-    if (possible_spawn_points.count == 0) return null;
+    if (possible_spawn_points.items.len == 0) return null;
 
-    const random_index = random.uintLessThan(usize, possible_spawn_points.count);
-    return possible_spawn_points.buf[possible_spawn_points.head + random_index].position;
+    const random_index = random.uintLessThan(usize, possible_spawn_points.items.len);
+    return possible_spawn_points.items[random_index].position;
 }

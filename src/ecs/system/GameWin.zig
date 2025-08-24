@@ -1,7 +1,7 @@
 const std = @import("std");
 const entity = @import("../entity.zig");
 const component = @import("../component.zig");
-const c = @import("../../c.zig");
+const c = @import("../../c.zig").c;
 const ImageSpawner = @import("../../ImageSpawner.zig");
 const TextSpawner = @import("../../TextSpawner.zig");
 
@@ -11,7 +11,8 @@ const GameWin = @This();
 reg: *entt.Registry,
 text_spawner: TextSpawner,
 image_spawner: ImageSpawner,
-spawned_entities: std.BoundedArray(entt.Entity, 2) = .{ .len = 0 },
+spawned_entities: [2]entt.Entity = undefined,
+spawned_entities_len: usize = 0,
 
 pub fn init(
     reg: *entt.Registry,
@@ -28,8 +29,8 @@ pub fn init(
 }
 
 pub fn deinit(self: *GameWin) void {
-    for (self.spawned_entities.slice()) |spawned_entity| {
-        self.text_spawner.despawn(spawned_entity);
+    for (0..self.spawned_entities_len) |i| {
+        self.text_spawner.despawn(self.spawned_entities[i]);
     }
     self.image_spawner.deinit();
 }
@@ -38,18 +39,20 @@ pub fn update(self: *GameWin, pacman: entt.Entity, game_is_paused: *bool) !void 
     const pellets_eater: component.PelletsEater = self.reg.getConst(component.PelletsEater, pacman);
     if (pellets_eater.left_pellets_count != 0) return;
 
-    try self.spawned_entities.append(try self.text_spawner.spawn(
+    self.spawned_entities[self.spawned_entities_len] = try self.text_spawner.spawn(
         "YOU WIN!",
         .{ .r = 255, .g = 0, .b = 255, .a = 255 },
         .{ .v = .center, .h = .center, .rel_offset = .{ .x = -0.15, .y = 0 } },
         .{ .w = null, .h = 0.2 },
-    ));
+    );
+    self.spawned_entities_len += 1;
 
-    try self.spawned_entities.append(try self.image_spawner.spawn(
+    self.spawned_entities[self.spawned_entities_len] = try self.image_spawner.spawn(
         "resources/smile-face.png",
         .{ .h = .center, .v = .center, .rel_offset = .{ .x = 0.4, .y = -0.05 } },
         .{ .w = null, .h = 0.3 },
-    ));
+    );
+    self.spawned_entities_len += 1;
 
     game_is_paused.* = true;
 }

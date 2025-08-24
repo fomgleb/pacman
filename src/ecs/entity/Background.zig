@@ -1,5 +1,5 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig");
+const c = @import("../../c.zig").c;
 const entt = @import("entt");
 
 pub fn init(reg: *entt.Registry, grid: entt.Entity, texture: *c.SDL_Texture, screen_side: component.ScreenSide) entt.Entity {
