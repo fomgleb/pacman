@@ -18,6 +18,8 @@ pub fn build(b: *Build) void {
     const sdl_ttf_dep = b.dependency("sdl_ttf", .{ .target = t, .optimize = .ReleaseFast, .preferred_linkage = .static });
 
     const embed_resources = b.option(bool, "embed-resources", "Embed contents of `resources` folder into the executable?");
+    const use_llvm = b.option(bool, "use-llvm", "Default is false");
+
     const options = b.addOptions();
     options.addOption(bool, "embed_resources", embed_resources orelse false);
 
@@ -38,37 +40,21 @@ pub fn build(b: *Build) void {
     main_module.linkLibrary(sdl_dep.artifact("SDL3"));
     main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
     main_module.linkLibrary(sdl_ttf_dep.artifact("SDL3_ttf"));
-    const main_exe = createMainExecutable(b, main_module);
-    addCheckStep(b, main_module);
-    addRunStep(b, main_exe);
+
+    const main_exe = b.addExecutable(.{ .name = "pacman", .root_module = main_module, .use_llvm = use_llvm });
+    b.installArtifact(main_exe);
+
+    const check_command = b.addExecutable(.{ .name = "check", .root_module = main_module });
+    b.step("check", "Check if project compiles").dependOn(&check_command.step);
+
+    const run_command = b.addRunArtifact(main_exe);
+    run_command.step.dependOn(b.getInstallStep());
+    if (b.args) |args| run_command.addArgs(args);
+    b.step("run", "Run the app").dependOn(&run_command.step);
 
     const test_module = b.createModule(.{ .root_source_file = b.path("src/test.zig"), .target = t, .optimize = o, .imports = imports });
     const test_exe = addTestExeStep(b, test_module);
     addTestStep(b, test_exe);
-}
-
-fn createMainExecutable(b: *Build, main_module: *Module) *Step.Compile {
-    const exe = b.addExecutable(.{
-        .name = "pacman",
-        .root_module = main_module,
-    });
-    b.installArtifact(exe);
-    return exe;
-}
-
-fn addCheckStep(b: *Build, main_module: *Module) void {
-    const check_command = b.addExecutable(.{
-        .name = "check",
-        .root_module = main_module,
-    });
-    b.step("check", "Check if project compiles").dependOn(&check_command.step);
-}
-
-fn addRunStep(b: *Build, exe: *Build.Step.Compile) void {
-    const run_command = b.addRunArtifact(exe);
-    run_command.step.dependOn(b.getInstallStep());
-    if (b.args) |args| run_command.addArgs(args);
-    b.step("run", "Run the app").dependOn(&run_command.step);
 }
 
 fn addTestExeStep(b: *Build, test_module: *Module) *Step.Compile {

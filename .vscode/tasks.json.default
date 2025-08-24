@@ -38,7 +38,7 @@
         },
         {
             "label": "BUILD DEBUG",
-            "command": "zig build -Doptimize=Debug --prominent-compile-errors",
+            "command": "zig build -Doptimize=Debug -Duse-llvm --prominent-compile-errors",
             "hide": true,
         },
         {
