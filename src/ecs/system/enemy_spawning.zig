@@ -31,7 +31,10 @@ pub fn update(reg: *entt.Registry, allocator: Allocator, pacman: entt.Entity) !v
 
         const enemy: entt.Entity = try can_spawn_one.entity_creator.create();
         reg.get(component.PositionOnGrid, enemy).* = .init(random_position.floatFromInt(f32));
-        reg.get(component.MovableOnGrid, enemy).requested_direction = random.enumValue(Direction);
+        const random_direction: Direction = random.enumValue(Direction);
+        const movable_on_grid: *component.MovableOnGrid = reg.get(component.MovableOnGrid, enemy);
+        movable_on_grid.requested_direction = random_direction;
+        movable_on_grid.current_direction = random_direction;
 
         can_spawn_one.is_spawned = true;
     }
