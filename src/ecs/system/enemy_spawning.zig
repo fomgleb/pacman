@@ -87,7 +87,7 @@ fn getEnemySpawnPosition(allocator: Allocator, grid_cells: component.GridCells, 
 
     fba_state.reset();
     const possible_spawn_points: std.ArrayList(Point) = blk: {
-        var furthest_points: std.ArrayList(Point) = try .initCapacity(fb_allocator, points_to_check_buf.len / @sizeOf(Point));
+        var furthest_points: std.ArrayList(Point) = try .initCapacity(fb_allocator, points_to_check_buf.len / @sizeOf(Point) - 1);
         var iterator = checked_points.keyIterator();
         while (iterator.next()) |checked_point|
             if (checked_point.distance == spawn_distance)
