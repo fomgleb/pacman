@@ -2,9 +2,10 @@ const std = @import("std");
 const log = std.log.scoped(.@"Level Loader");
 const Allocator = std.mem.Allocator;
 const component = @import("../component.zig");
-const asset_loader = @import("../../asset_loader.zig");
 const GridCell = @import("../../GridCell.zig").GridCell;
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const asset_loader = game_kit.asset_loader;
+const Vec2 = game_kit.Vec2;
 const entt = @import("entt");
 
 grid_members: component.GridCells,

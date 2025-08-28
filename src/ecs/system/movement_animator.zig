@@ -1,8 +1,9 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
-const c = @import("../../c.zig");
-const Rect = @import("../../Rect.zig").Rect;
-const sdl = @import("../../sdl.zig");
+const game_kit = @import("game_kit");
+const c = game_kit.c;
+const Rect = game_kit.Rect;
+const sdl = game_kit.sdl;
 const entt = @import("entt");
 
 pub fn update(reg: *entt.Registry, events_holder: entt.Entity) error{SdlError}!void {

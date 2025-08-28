@@ -1,6 +1,7 @@
 const component = @import("../component.zig");
-const Rect = @import("../../Rect.zig").Rect;
-const sdl = @import("../../sdl.zig");
+const game_kit = @import("game_kit");
+const Rect = game_kit.Rect;
+const sdl = game_kit.sdl;
 const entt = @import("entt");
 
 pub fn update(reg: *entt.Registry) error{SdlError}!void {

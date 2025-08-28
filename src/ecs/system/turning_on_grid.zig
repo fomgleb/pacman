@@ -1,7 +1,7 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
 const Direction = @import("../../Direction.zig").Direction;
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const Vec2 = @import("game_kit").Vec2;
 const entt = @import("entt");
 
 pub fn update(reg: *entt.Registry) void {

@@ -1,9 +1,8 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
-const sdl = @import("../../sdl.zig");
+const sdl = @import("game_kit").sdl;
 const entt = @import("entt");
 
-pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!void {
+pub fn update(reg: *entt.Registry, renderer: *sdl.Renderer) error{SdlError}!void {
     var view = reg.view(.{ component.GridCells, component.RenderArea }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {

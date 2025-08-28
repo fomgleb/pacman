@@ -1,4 +1,4 @@
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const Vec2 = @import("game_kit").Vec2;
 
 current: Vec2(f32),
 previous: Vec2(f32),

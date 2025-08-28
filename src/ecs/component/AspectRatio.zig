@@ -1,4 +1,4 @@
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const Vec2 = @import("game_kit").Vec2;
 const AspectRatio = @This();
 
 value: Vec2(u16),

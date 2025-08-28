@@ -1,5 +1,5 @@
 pub const RenderArea = Rect(f32);
-pub const Texture = *c.SDL_Texture;
+pub const Texture = *sdl.Texture;
 pub const GridCells = Array2D(GridCell);
 pub const PlayerTag = struct {};
 pub const EnemyTag = struct {};
@@ -28,9 +28,10 @@ pub const RelativeSize = @import("component/RelativeSize.zig");
 
 const std = @import("std");
 const Array2D = @import("../Array2D.zig").Array2D;
-const c = @import("../c.zig").c;
 const Direction = @import("../Direction.zig").Direction;
 const GridCell = @import("../GridCell.zig").GridCell;
-const Vec2 = @import("../Vec2.zig").Vec2;
-const Rect = @import("../Rect.zig").Rect;
 const entt = @import("entt");
+const game_kit = @import("game_kit");
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
+const Rect = game_kit.Rect;

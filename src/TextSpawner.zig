@@ -1,16 +1,16 @@
 const component = @import("ecs/component.zig");
-const Color = @import("Color.zig");
-const c = @import("c.zig").c;
-const sdl = @import("sdl.zig");
 const entt = @import("entt");
+const game_kit = @import("game_kit");
+const Color = game_kit.Color;
+const sdl = game_kit.sdl;
 const TextSpawner = @This();
 
 reg: *entt.Registry,
-renderer: *c.SDL_Renderer,
+renderer: *sdl.Renderer,
 grid: entt.Entity,
-font: *c.TTF_Font,
+font: *sdl.ttf.Font,
 
-pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, grid: entt.Entity, font: *c.TTF_Font) TextSpawner {
+pub fn init(reg: *entt.Registry, renderer: *sdl.Renderer, grid: entt.Entity, font: *sdl.ttf.Font) TextSpawner {
     return .{
         .reg = reg,
         .renderer = renderer,
@@ -21,9 +21,9 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, grid: entt.Entity, f
 
 /// `height` is relative to level height. The number from 0 to 1.
 pub fn spawn(self: *TextSpawner, text: []const u8, color: Color, layout: component.Layout, rel_size: component.RelativeSize) !entt.Entity {
-    const text_surface: *c.SDL_Surface = try sdl.ttf.renderTextBlended(self.font, text, color);
-    defer c.SDL_DestroySurface(text_surface);
-    const texture: *c.SDL_Texture = try sdl.createTextureFromSurface(self.renderer, text_surface);
+    const text_surface: *sdl.Surface = try sdl.ttf.renderTextBlended(self.font, text, color);
+    defer sdl.destroySurface(text_surface);
+    const texture: *sdl.Texture = try sdl.createTextureFromSurface(self.renderer, text_surface);
     try sdl.setTextureScaleMode(texture, .nearest);
 
     const text_entity: entt.Entity = self.reg.create();
@@ -36,6 +36,6 @@ pub fn spawn(self: *TextSpawner, text: []const u8, color: Color, layout: compone
 }
 
 pub fn despawn(self: TextSpawner, text: entt.Entity) void {
-    c.SDL_DestroyTexture(self.reg.getConst(component.Texture, text));
+    sdl.destroyTexture(self.reg.getConst(component.Texture, text));
     self.reg.destroy(text);
 }

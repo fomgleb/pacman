@@ -1,13 +1,13 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
 const Direction = @import("../../Direction.zig").Direction;
 const EntityCreator = @import("../../EntityCreator.zig");
-const asset_loader = @import("../../asset_loader.zig");
-const sdl = @import("../../sdl.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
 const entt = @import("entt");
+const game_kit = @import("game_kit");
+const asset_loader = game_kit.asset_loader;
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
 const EnemyCreator = @This();
 
 const sprite_width = 17;
@@ -17,7 +17,7 @@ reg: *entt.Registry,
 allocator: Allocator,
 grid: entt.Entity,
 victims: std.AutoArrayHashMap(entt.Entity, void),
-move_sprite_sheet: *c.SDL_Texture,
+move_sprite_sheet: *sdl.Texture,
 config: Config,
 
 /// TODO: Use in component.GhostAi.
@@ -33,14 +33,14 @@ pub const Config = struct {
 
 pub fn init(
     reg: *entt.Registry,
-    renderer: *c.SDL_Renderer,
+    renderer: *sdl.Renderer,
     allocator: Allocator,
     grid: entt.Entity,
     pacman: entt.Entity,
     comptime move_sprite_sheet_path: [:0]const u8,
     config: Config,
 ) !EnemyCreator {
-    const move_sprite_sheet = try asset_loader.loadSdlTexture(
+    const move_sprite_sheet = try asset_loader.loadTexture(
         renderer,
         move_sprite_sheet_path,
         .nearest,
@@ -61,7 +61,7 @@ pub fn init(
 
 pub fn deinit(self: *EnemyCreator) void {
     self.victims.deinit();
-    c.SDL_DestroyTexture(self.move_sprite_sheet);
+    sdl.destroyTexture(self.move_sprite_sheet);
 }
 
 pub fn create(self: *const EnemyCreator) !entt.Entity {

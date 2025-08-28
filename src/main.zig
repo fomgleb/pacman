@@ -1,12 +1,12 @@
 const std = @import("std");
-const asset_loader = @import("asset_loader.zig");
-const c = @import("c.zig").c;
 const ecs = @import("ecs.zig");
 const FpsLimiter = @import("FpsLimiter.zig");
-const sdl = @import("sdl.zig");
 const TextSpawner = @import("TextSpawner.zig");
-const Vec2 = @import("Vec2.zig").Vec2;
 const entt = @import("entt");
+const game_kit = @import("game_kit");
+const asset_loader = game_kit.asset_loader;
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
 
 const window_title = "Pacman";
 const initial_window_size = Vec2(u32){ .x = 600, .y = 400 };
@@ -39,28 +39,28 @@ const fat_genious_ghost_config: ecs.entity.GhostCreator.Config = .{
 };
 
 pub fn main() !void {
-    try sdl.initSubSystem(c.SDL_INIT_VIDEO);
-    defer c.SDL_Quit();
-    defer c.SDL_QuitSubSystem(c.SDL_INIT_VIDEO);
-    const sdl_window = try sdl.createWindow(window_title, initial_window_size, c.SDL_WINDOW_RESIZABLE);
-    defer c.SDL_DestroyWindow(sdl_window);
-    const sdl_renderer = try sdl.createRenderer(sdl_window, null);
-    defer c.SDL_DestroyRenderer(sdl_renderer);
+    try sdl.initSubSystem(sdl.c.SDL_INIT_VIDEO);
+    defer sdl.quit();
+    defer sdl.quitSubSystem(sdl.c.SDL_INIT_VIDEO);
+    const window: *sdl.Window = try sdl.createWindow(window_title, initial_window_size, sdl.c.SDL_WINDOW_RESIZABLE);
+    defer sdl.destroyWindow(window);
+    const renderer: *sdl.Renderer = try sdl.createRenderer(window, null);
+    defer sdl.destroyRenderer(renderer);
     try sdl.ttf.init();
-    defer c.TTF_Quit();
+    defer sdl.ttf.quit();
 
     var gpa_state = std.heap.DebugAllocator(.{}).init;
     defer if (gpa_state.deinit() == .leak) @panic("Memory leak detected");
     const allocator = gpa_state.allocator();
 
-    const pellet_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/pellet.png", .nearest);
-    defer c.SDL_DestroyTexture(pellet_texture);
+    const pellet_texture = try asset_loader.loadTexture(renderer, "resources/pellet.png", .nearest);
+    defer sdl.destroyTexture(pellet_texture);
 
-    const wall_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/wall/wall.png", .nearest);
-    defer c.SDL_DestroyTexture(wall_texture);
+    const wall_texture = try asset_loader.loadTexture(renderer, "resources/wall/wall.png", .nearest);
+    defer sdl.destroyTexture(wall_texture);
 
-    const grass_texture = try asset_loader.loadSdlTexture(sdl_renderer, "resources/grass/grass.png", .nearest);
-    defer c.SDL_DestroyTexture(grass_texture);
+    const grass_texture = try asset_loader.loadTexture(renderer, "resources/grass/grass.png", .nearest);
+    defer sdl.destroyTexture(grass_texture);
 
     while (true) {
         var reg = entt.Registry.init(allocator);
@@ -71,7 +71,7 @@ pub fn main() !void {
 
         var fast_stupid_ghost_creator: ecs.entity.GhostCreator = try .init(
             &reg,
-            sdl_renderer,
+            renderer,
             allocator,
             grid,
             pacman,
@@ -82,7 +82,7 @@ pub fn main() !void {
 
         var kinda_smart_ghost_creator: ecs.entity.GhostCreator = try .init(
             &reg,
-            sdl_renderer,
+            renderer,
             allocator,
             grid,
             pacman,
@@ -93,7 +93,7 @@ pub fn main() !void {
 
         var fat_genious_ghost_creator: ecs.entity.GhostCreator = try .init(
             &reg,
-            sdl_renderer,
+            renderer,
             allocator,
             grid,
             pacman,
@@ -115,24 +115,24 @@ pub fn main() !void {
         const level_loader = try ecs.system.LevelLoader.init(allocator, &reg, "resources/level.txt", grid, pacman);
         defer level_loader.deinit();
 
-        const player_initializer = try ecs.system.PlayerInitializer.init(&reg, sdl_renderer, pacman, grid);
+        const player_initializer = try ecs.system.PlayerInitializer.init(&reg, renderer, pacman, grid);
         defer player_initializer.deinit();
 
         var fps_limiter = try FpsLimiter.init(60);
 
         var game_is_paused: bool = false;
 
-        const window_size: Vec2(f32) = (try sdl.getWindowSize(sdl_window)).floatFromInt(f32);
+        const window_size: Vec2(f32) = (try sdl.getWindowSize(window)).floatFromInt(f32);
         ecs.system.palcer_in_window_center.init(&reg, window_size);
         ecs.system.background_scaler.init(&reg, window_size);
 
-        const yoster_font: *c.TTF_Font = try sdl.ttf.openFontIo(try asset_loader.openSdlIoStream("resources/fonts/yoster.ttf"), true, 60);
-        defer c.TTF_CloseFont(yoster_font);
+        const yoster_font: *sdl.ttf.Font = try sdl.ttf.openFontIo(try asset_loader.openIoStream("resources/fonts/yoster.ttf"), true, 60);
+        defer sdl.ttf.closeFont(yoster_font);
 
-        var game_over: ecs.system.GameOver = .init(&reg, sdl_renderer, grid, yoster_font);
+        var game_over: ecs.system.GameOver = .init(&reg, renderer, grid, yoster_font);
         defer game_over.deinit();
 
-        var game_win: ecs.system.GameWin = try .init(&reg, allocator, sdl_renderer, grid, yoster_font);
+        var game_win: ecs.system.GameWin = try .init(&reg, allocator, renderer, grid, yoster_font);
         defer game_win.deinit();
 
         var profiling_timer: std.time.Timer = try .start();
@@ -181,21 +181,21 @@ pub fn main() !void {
             try ecs.system.layouted_scaling.update(&reg);
             std.log.debug("layouted_scaling: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
 
-            try sdl.renderClear(sdl_renderer);
+            try sdl.renderClear(renderer);
             std.log.debug("sdl.renderClear: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.background_renderer.update(&reg, sdl_renderer);
+            try ecs.system.background_renderer.update(&reg, renderer);
             std.log.debug("background_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.debug_grid_renderer.update(&reg, sdl_renderer);
+            try ecs.system.debug_grid_renderer.update(&reg, renderer);
             std.log.debug("debug_grid_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.level_renderer.update(&reg, sdl_renderer, wall_texture, pellet_texture, grass_texture);
+            try ecs.system.level_renderer.update(&reg, renderer, wall_texture, pellet_texture, grass_texture);
             std.log.debug("level_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.movement_animation_renderer.update(&reg, sdl_renderer);
+            try ecs.system.movement_animation_renderer.update(&reg, renderer);
             std.log.debug("movement_animation_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.texture_renderer.update(&reg, sdl_renderer);
+            try ecs.system.texture_renderer.update(&reg, renderer);
             std.log.debug("texture_renderer: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try ecs.system.text_rendering.update(&reg, sdl_renderer);
+            try ecs.system.text_rendering.update(&reg, renderer);
             std.log.debug("text_rendering: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
-            try sdl.renderPresent(sdl_renderer);
+            try sdl.renderPresent(renderer);
             std.log.debug("sdl.renderPresent: {}ms", .{profiling_timer.lap() / std.time.ns_per_ms});
 
             fps_limiter.waitFrameEnd();

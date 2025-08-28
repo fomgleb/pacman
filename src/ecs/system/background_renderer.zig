@@ -1,11 +1,11 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
-const Rect = @import("../../Rect.zig").Rect;
-const sdl = @import("../../sdl.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const Rect = game_kit.Rect;
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
 const entt = @import("entt");
 
-pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) !void {
+pub fn update(reg: *entt.Registry, renderer: *sdl.Renderer) !void {
     var view = reg.view(.{
         component.BackgroundTag,
         component.GridMembership,

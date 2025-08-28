@@ -1,6 +1,7 @@
 const component = @import("../component.zig");
-const Rect = @import("../../Rect.zig").Rect;
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const Rect = game_kit.Rect;
+const Vec2 = game_kit.Vec2;
 const entt = @import("entt");
 
 pub fn update(reg: *entt.Registry) void {

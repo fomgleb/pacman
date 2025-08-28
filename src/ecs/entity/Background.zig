@@ -1,8 +1,8 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
+const sdl = @import("game_kit").sdl;
 const entt = @import("entt");
 
-pub fn init(reg: *entt.Registry, grid: entt.Entity, texture: *c.SDL_Texture, screen_side: component.ScreenSide) entt.Entity {
+pub fn init(reg: *entt.Registry, grid: entt.Entity, texture: *sdl.Texture, screen_side: component.ScreenSide) entt.Entity {
     const background = reg.create();
 
     reg.add(background, @as(component.BackgroundTag, .{}));

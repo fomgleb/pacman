@@ -1,7 +1,7 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const assert = std.debug.assert;
-const Vec2 = @import("Vec2.zig").Vec2;
+const Vec2 = @import("game_kit").Vec2;
 
 pub fn Array2D(T: type) type {
     return struct {

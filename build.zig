@@ -5,41 +5,37 @@ const Module = Build.Module;
 const Import = Module.Import;
 const ResolvedTarget = Build.ResolvedTarget;
 const OptimizeMode = std.builtin.OptimizeMode;
+const game_kit = @import("game_kit");
 
 pub fn build(b: *Build) void {
     const t = b.standardTargetOptions(.{});
     const o = b.standardOptimizeOption(.{});
 
-    const imports = &[_]Import{
-        .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
-    };
-    const sdl_dep = b.dependency("sdl", .{ .target = t, .optimize = o, .preferred_linkage = .static });
-    const sdl_image_dep = b.dependency("sdl_image", .{ .target = t, .optimize = o });
-    const sdl_ttf_dep = b.dependency("sdl_ttf", .{ .target = t, .optimize = .ReleaseFast, .preferred_linkage = .static });
-
     const embed_resources = b.option(bool, "embed-resources", "Embed contents of `resources` folder into the executable?");
     const use_llvm = b.option(bool, "use-llvm", "Default is false");
 
-    const options = b.addOptions();
-    options.addOption(bool, "embed_resources", embed_resources orelse false);
+    const game_kit_dep = b.dependency("game_kit", .{ .target = t, .optimize = o, .@"embed-resources" = embed_resources });
+    const game_kit_module = game_kit_dep.module("game_kit");
+
+    const imports = &[_]Import{
+        .{ .name = "entt", .module = b.dependency("entt", .{ .target = t, .optimize = o }).module("zig-ecs") },
+        .{ .name = "game_kit", .module = game_kit_module },
+    };
 
     const main_module = b.createModule(.{ .root_source_file = b.path("src/main.zig"), .target = t, .optimize = o, .imports = imports });
+
     // TODO: All these manual addAnonymousImport can be done with iterating over "resources" folder
     // TODO: Rename "resources" -> "assets"
-    main_module.addAnonymousImport("resources/fonts/yoster.ttf", .{ .root_source_file = b.path("resources/fonts/yoster.ttf") });
-    main_module.addAnonymousImport("resources/ghosts/fast_stupid_ghost-move.png", .{ .root_source_file = b.path("resources/ghosts/fast_stupid_ghost-move.png") });
-    main_module.addAnonymousImport("resources/ghosts/kinda_smart_ghost-move.png", .{ .root_source_file = b.path("resources/ghosts/kinda_smart_ghost-move.png") });
-    main_module.addAnonymousImport("resources/ghosts/fat_genious_ghost-move.png", .{ .root_source_file = b.path("resources/ghosts/fat_genious_ghost-move.png") });
-    main_module.addAnonymousImport("resources/grass/grass.png", .{ .root_source_file = b.path("resources/grass/grass.png") });
-    main_module.addAnonymousImport("resources/pacman/pacman-move.png", .{ .root_source_file = b.path("resources/pacman/pacman-move.png") });
-    main_module.addAnonymousImport("resources/wall/wall.png", .{ .root_source_file = b.path("resources/wall/wall.png") });
-    main_module.addAnonymousImport("resources/level.txt", .{ .root_source_file = b.path("resources/level.txt") });
-    main_module.addAnonymousImport("resources/pellet.png", .{ .root_source_file = b.path("resources/pellet.png") });
-    main_module.addAnonymousImport("resources/smile-face.png", .{ .root_source_file = b.path("resources/smile-face.png") });
-    main_module.addOptions("config", options);
-    main_module.linkLibrary(sdl_dep.artifact("SDL3"));
-    main_module.linkLibrary(sdl_image_dep.artifact("SDL3_image"));
-    main_module.linkLibrary(sdl_ttf_dep.artifact("SDL3_ttf"));
+    game_kit.addAsset(b, game_kit_module, "resources/fonts/yoster.ttf");
+    game_kit.addAsset(b, game_kit_module, "resources/ghosts/fast_stupid_ghost-move.png");
+    game_kit.addAsset(b, game_kit_module, "resources/ghosts/kinda_smart_ghost-move.png");
+    game_kit.addAsset(b, game_kit_module, "resources/ghosts/fat_genious_ghost-move.png");
+    game_kit.addAsset(b, game_kit_module, "resources/grass/grass.png");
+    game_kit.addAsset(b, game_kit_module, "resources/pacman/pacman-move.png");
+    game_kit.addAsset(b, game_kit_module, "resources/wall/wall.png");
+    game_kit.addAsset(b, game_kit_module, "resources/level.txt");
+    game_kit.addAsset(b, game_kit_module, "resources/pellet.png");
+    game_kit.addAsset(b, game_kit_module, "resources/smile-face.png");
 
     const main_exe = b.addExecutable(.{ .name = "pacman", .root_module = main_module, .use_llvm = use_llvm });
     b.installArtifact(main_exe);

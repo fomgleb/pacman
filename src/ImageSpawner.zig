@@ -1,25 +1,26 @@
 const std = @import("std");
 const component = @import("ecs/component.zig");
-const c = @import("c.zig").c;
-const asset_loader = @import("asset_loader.zig");
+const game_kit = @import("game_kit");
+const asset_loader = game_kit.asset_loader;
+const sdl = game_kit.sdl;
 const entt = @import("entt");
 const ImageSpawner = @This();
 
 reg: *entt.Registry,
-renderer: *c.SDL_Renderer,
+renderer: *sdl.Renderer,
 grid: entt.Entity,
-image_textures: std.StringHashMap(*c.SDL_Texture),
+image_textures: std.StringHashMap(*sdl.Texture),
 
 pub fn init(
     reg: *entt.Registry,
     allocator: std.mem.Allocator,
-    renderer: *c.SDL_Renderer,
+    renderer: *sdl.Renderer,
     comptime images_to_preload: []const [:0]const u8,
     grid: entt.Entity,
 ) !ImageSpawner {
-    var image_textures: std.StringHashMap(*c.SDL_Texture) = .init(allocator);
+    var image_textures: std.StringHashMap(*sdl.Texture) = .init(allocator);
     inline for (images_to_preload) |image_to_preload| {
-        const texture: *c.SDL_Texture = try asset_loader.loadSdlTexture(renderer, image_to_preload, .nearest);
+        const texture: *sdl.Texture = try asset_loader.loadTexture(renderer, image_to_preload, .nearest);
         try image_textures.put(image_to_preload, texture);
     }
 
@@ -34,7 +35,7 @@ pub fn init(
 pub fn deinit(self: *ImageSpawner) void {
     var iterator = self.image_textures.iterator();
     while (iterator.next()) |image_texture|
-        c.SDL_DestroyTexture(image_texture.value_ptr.*);
+        sdl.destroyTexture(image_texture.value_ptr.*);
     self.image_textures.deinit();
 }
 
@@ -44,10 +45,10 @@ pub fn spawn(
     layout: component.Layout,
     rel_size: component.RelativeSize,
 ) !entt.Entity {
-    const image_texture: *c.SDL_Texture = if (self.image_textures.get(image_path)) |texture|
+    const image_texture: *sdl.Texture = if (self.image_textures.get(image_path)) |texture|
         texture
     else blk: {
-        const texture: *c.SDL_Texture = try asset_loader.loadSdlTexture(self.renderer, image_path, .nearest);
+        const texture: *sdl.Texture = try asset_loader.loadTexture(self.renderer, image_path, .nearest);
         try self.image_textures.put(image_path, texture);
         break :blk texture;
     };

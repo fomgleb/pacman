@@ -1,8 +1,8 @@
 const std = @import("std");
 const entity = @import("../entity.zig");
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
 const TextSpawner = @import("../../TextSpawner.zig");
+const sdl = @import("game_kit").sdl;
 const entt = @import("entt");
 const GameOver = @This();
 
@@ -11,7 +11,7 @@ text_spawner: TextSpawner,
 spawned_texts: [2]entt.Entity = undefined,
 spawned_texts_len: usize = 0,
 
-pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, grid: entt.Entity, font: *c.TTF_Font) GameOver {
+pub fn init(reg: *entt.Registry, renderer: *sdl.Renderer, grid: entt.Entity, font: *sdl.ttf.Font) GameOver {
     return .{
         .reg = reg,
         .text_spawner = .init(reg, renderer, grid, font),

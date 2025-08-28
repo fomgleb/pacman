@@ -1,9 +1,9 @@
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
 const Direction = @import("../../Direction.zig").Direction;
-const asset_loader = @import("../../asset_loader.zig");
-const sdl = @import("../../sdl.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
+const asset_loader = @import("game_kit").asset_loader;
 const entt = @import("entt");
 
 const texture_path = "resources/pacman.png";
@@ -14,9 +14,9 @@ const sprite_width = 17;
 const sprite_fps = speed * 40.0;
 const sprite_can_rotate = true;
 
-pacman_move_sprite_sheet: *c.SDL_Texture,
+pacman_move_sprite_sheet: *sdl.Texture,
 
-pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.Entity, grid: entt.Entity) !@This() {
+pub fn init(reg: *entt.Registry, renderer: *sdl.Renderer, pacman_entity: entt.Entity, grid: entt.Entity) !@This() {
     // component.GridCellPosition
     const grid_cells = reg.getConst(component.GridCells, grid);
     const pacman_spawn_pos = findPacmanSpawn(grid_cells) orelse return error.NoPacmanSpawn;
@@ -35,14 +35,14 @@ pub fn init(reg: *entt.Registry, renderer: *c.SDL_Renderer, pacman_entity: entt.
     reg.replace(pacman_entity, component.GridMembership{ .grid_entity = grid });
 
     // component.MovementAnimation
-    const move_sprite_sheet = try asset_loader.loadSdlTexture(renderer, sprite_sheet_path, .nearest);
+    const move_sprite_sheet = try asset_loader.loadTexture(renderer, sprite_sheet_path, .nearest);
     reg.replace(pacman_entity, try component.MovementAnimation.init(move_sprite_sheet, sprite_width, sprite_fps, sprite_can_rotate));
 
     return .{ .pacman_move_sprite_sheet = move_sprite_sheet };
 }
 
 pub fn deinit(self: @This()) void {
-    c.SDL_DestroyTexture(self.pacman_move_sprite_sheet);
+    sdl.destroyTexture(self.pacman_move_sprite_sheet);
 }
 
 fn findPacmanSpawn(grid_cells: component.GridCells) ?Vec2(usize) {

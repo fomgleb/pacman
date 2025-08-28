@@ -1,6 +1,7 @@
 const component = @import("../component.zig");
-const sdl = @import("../../sdl.zig");
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const sdl = game_kit.sdl;
+const Vec2 = game_kit.Vec2;
 const entt = @import("entt");
 
 const collision_size = Vec2(f32){ .x = 0.4, .y = 0.4 };

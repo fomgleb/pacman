@@ -5,10 +5,11 @@ const random = std.crypto.random;
 const pow = std.math.pow;
 const component = @import("../component.zig");
 const entity = @import("../entity.zig");
-const c = @import("../../c.zig");
 const Direction = @import("../../Direction.zig").Direction;
 const Queue = @import("../../Queue.zig").Queue;
-const Vec2 = @import("../../Vec2.zig").Vec2;
+const game_kit = @import("game_kit");
+const c = game_kit.c;
+const Vec2 = game_kit.Vec2;
 const entt = @import("entt");
 
 const spawn_distance = 15;

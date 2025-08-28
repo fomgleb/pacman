@@ -1,7 +1,7 @@
 const std = @import("std");
 const entity = @import("../entity.zig");
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
+const sdl = @import("game_kit").sdl;
 const ImageSpawner = @import("../../ImageSpawner.zig");
 const TextSpawner = @import("../../TextSpawner.zig");
 
@@ -17,9 +17,9 @@ spawned_entities_len: usize = 0,
 pub fn init(
     reg: *entt.Registry,
     allocator: std.mem.Allocator,
-    renderer: *c.SDL_Renderer,
+    renderer: *sdl.Renderer,
     grid: entt.Entity,
-    font: *c.TTF_Font,
+    font: *sdl.ttf.Font,
 ) !GameWin {
     return .{
         .reg = reg,

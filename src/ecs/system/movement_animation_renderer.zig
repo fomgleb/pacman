@@ -1,11 +1,11 @@
 const time = @import("std").time;
 const component = @import("../component.zig");
-const c = @import("../../c.zig").c;
-const Rect = @import("../../Rect.zig").Rect;
-const sdl = @import("../../sdl.zig");
+const game_kit = @import("game_kit");
+const Rect = game_kit.Rect;
+const sdl = game_kit.sdl;
 const entt = @import("entt");
 
-pub fn update(reg: *entt.Registry, renderer: *c.SDL_Renderer) error{SdlError}!void {
+pub fn update(reg: *entt.Registry, renderer: *sdl.Renderer) error{SdlError}!void {
     var view = reg.view(.{
         component.MovableOnGrid,
         component.RenderArea,
