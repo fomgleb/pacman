@@ -1,2 +1,2 @@
-# Demonstraion
+# Demonstration
 ![Demo GIF](./docs/demo.gif)
